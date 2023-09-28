@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  app:
+    image: eclipse-temurin:17
+    ports:
+      - 8080:8080
+    volumes:
+      - ./workspace:/workspace
+    working_dir: /workspace
+    tty: true
+
+  db:
+    build: ./infra/mysql
+    volumes:
+      - db-store:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+volumes:
+  db-store:
