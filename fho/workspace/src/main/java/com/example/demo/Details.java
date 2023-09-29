@@ -10,18 +10,21 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "users")
-public class User {
+@Table(name = "stream_info")
+public class Details {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int streamId;
+
+    @Column(nullable = false)
     private int id;
 
     @Column(nullable = false)
-    private String email;
+    private String time;
 
     @Column(nullable = false)
-    private String password;
-
+    private String description;
+    
     @Column(nullable = false)
-    private String name;
+    private int isDelete;
 }
