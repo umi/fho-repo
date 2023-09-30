@@ -19,8 +19,8 @@ public class DetailsController {
     @Autowired
     private DetailsService detailsService;
 
-	@GetMapping("/{id}")
-    public String index(@PathVariable Integer id, Model model) {
+	@GetMapping("{id}")
+    public String index(@PathVariable("id") Integer id, Model model) {
         List<Details> details = detailsService.findById(id);
         model.addAttribute("details", details);
         return "details/index";
