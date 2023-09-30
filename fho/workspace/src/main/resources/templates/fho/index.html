@@ -18,13 +18,13 @@
         </thead>
         <tbody>
 			<tr th:each="line : ${fho}" th:object="${fho}">
-				<td><a th:href="|/details/*{id}|">[[*{id}]]</a></td>
-                <td>[[*{youtubeId}]]</td>
-                <td><a th:href="|/details/*{id}|">[[*{title}]]</a></td>
-                <td>[[*{streamStart}]]</td>
-                <td>[[*{total}]]</td>
-                <td>[[*{isMember}]]</td>
-                <td>[[*{isStatus}]]</td>
+				<td><a th:href="|/details/${line.id}|">[[${line.id}]]</a></td>
+                <td>[[${youtubeId}]]</td>
+                <td><a th:href="|/details/${line.id}|">[[${line.title}]]</a></td>
+                <td>[[${line.streamStart}]]</td>
+                <td>[[${line.total}]]</td>
+                <td>[[${line.isMember}]]</td>
+                <td>[[${line.isStatus}]]</td>
             </tr>
         </tbody>
     </table>
