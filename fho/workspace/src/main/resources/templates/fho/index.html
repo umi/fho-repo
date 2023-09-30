@@ -17,14 +17,14 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="fho : ${fho}" th:object="${fho}">
-                <td><a href="@{/details/{id}(id=*{id})}" th:text="*{id}"></a></td>
-                <td th:text="*{youtubeId}"></td>
-                <td><a href="@{/details/{id}(id=*{id})}" th:text="*{title}"></a></td>
-                <td th:text="*{streamStart}"></td>
-                <td th:text="*{total}"></td>
-                <td th:text="*{isMember}"></td>
-                <td th:text="*{isStatus}"></td>
+			<tr th:each="line : ${fho}" th:object="${fho}">
+				<td><a th:href="|/details/*{id}|">[[*{id}]]</a></td>
+                <td>[[*{youtubeId}]]</td>
+                <td><a th:href="|/details/*{id}|">[[*{title}]]</a></td>
+                <td>[[*{streamStart}]]</td>
+                <td>[[*{total}]]</td>
+                <td>[[*{isMember}]]</td>
+                <td>[[*{isStatus}]]</td>
             </tr>
         </tbody>
     </table>
