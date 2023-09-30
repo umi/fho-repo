@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
+    <link th:href="@{/css/content.css}" rel="stylesheet">
 </head>
 <body>
     <table border=1>
@@ -19,12 +20,12 @@
         <tbody>
 			<tr th:each="line : ${fho}" th:object="${fho}">
 				<td><a th:href="|/details/${line.id}|">[[${line.id}]]</a></td>
-                <td>[[${youtubeId}]]</td>
+                <td>[[${line.youtubeId}]]</td>
                 <td><a th:href="|/details/${line.id}|">[[${line.title}]]</a></td>
                 <td>[[${line.streamStart}]]</td>
                 <td>[[${line.total}]]</td>
                 <td>[[${line.isMember}]]</td>
-                <td>[[${line.isStatus}]]</td>
+                <td>[[${line.isDelete}]]</td>
             </tr>
         </tbody>
     </table>

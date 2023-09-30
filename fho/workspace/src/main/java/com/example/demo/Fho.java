@@ -32,5 +32,5 @@ public class Fho {
     private int isMember;
     
     @Column(nullable = false)
-    private int isStatus;
+    private int isDelete;
 }
