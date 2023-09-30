@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>File Reader</title>
+</head>
+<body>
+
+<button onclick="location.href='/readFile'">ファイル読み取り</button>
+<button onclick="location.href='/insert'">ファイル取り込み</button>
+<button onclick="location.href='/'">戻る</button>
+
+<ul>
+    <li th:each="line : ${content}" th:text="${line}"></li>
+</ul>
+
+</body>
+</html>

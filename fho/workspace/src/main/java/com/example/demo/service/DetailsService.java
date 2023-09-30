@@ -17,5 +17,12 @@ public class DetailsService {
 	public List<Details> findById(Integer id) {
     	return detailsRepository.findByIdCustom(id);
 	}
+	
+	public void setDetails(String content, int id) {
+		
+            Details data = new Details();
+            data.setContent(content, id); // 編集ロジックをここに追加できます
+            detailsRepository.save(data);
+	}
 
 }

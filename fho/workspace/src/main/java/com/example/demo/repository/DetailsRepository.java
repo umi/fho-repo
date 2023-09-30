@@ -12,4 +12,7 @@ import java.util.List;
 public interface DetailsRepository extends JpaRepository<Details, Integer> {
 	@Query("SELECT d FROM Details d WHERE d.id = ?1")
 	public List<Details> findByIdCustom(int id);
+	
+	@Query("SELECT MAX(d.id) FROM Details d")
+	int findMaxId();
 }
