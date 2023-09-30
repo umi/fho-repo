@@ -1,0 +1,32 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+</head>
+<body>
+    <table border=1>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>youtubeURL</th>
+                <th>タイトル</th>
+                <th>配信開始日時</th>
+                <th>総配信時間[秒]</th>
+                <th>メンバーフラグ</th>
+                <th>削除フラグ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="fho : ${fho}" th:object="${fho}">
+                <td><a href="@{/details/{id}(id=*{id})}" th:text="*{id}"></a></td>
+                <td th:text="*{youtubeId}"></td>
+                <td><a href="@{/details/{id}(id=*{id})}" th:text="*{title}"></a></td>
+                <td th:text="*{streamStart}"></td>
+                <td th:text="*{total}"></td>
+                <td th:text="*{isMember}"></td>
+                <td th:text="*{isStatus}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
