@@ -5,6 +5,9 @@ import java.time.format.DateTimeFormatter;
 
 public class TimeToSecondsConverter {
     public static int convertToSeconds(String timeString) {
+		if (timeString.isEmpty()) {
+			return 0;
+		}
         String[] parts = timeString.split(":");
     	
     	if (parts.length == 3) { // 時間が "h:mm:ss" の形式の場合
@@ -17,7 +20,7 @@ public class TimeToSecondsConverter {
 	        int second = Integer.parseInt(parts[1]);
 	        return minute*60+second;
     	} else if (parts.length == 1){
-    		int second = Integer.parseInt(parts[1]);
+    		int second = Integer.parseInt(parts[0]);
     		return second;
     	} else{
         // 不正なフォーマットの場合、原文を返すなどのエラー処理をここに記述します。
