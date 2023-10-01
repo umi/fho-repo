@@ -17,9 +17,7 @@ public class FhoService {
         return fhoRepository.findAll();
     }
 	
-	public void setFho(List<String> contents) {
-            Fho data = new Fho();
-            data.setContent(contents); // 編集ロジックをここに追加できます
-            fhoRepository.save(data);
+	public void setFho(Fho fho) {
+		fhoRepository.save(fho);
 	}
 }
