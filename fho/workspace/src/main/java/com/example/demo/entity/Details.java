@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -22,9 +23,11 @@ public class Details {
     @Column(nullable = false)
     private int id;
 
+	@Getter
     @Column(nullable = false)
     private String time;
 
+	@Getter
     @Column(nullable = false)
     private String description;
     
@@ -47,13 +50,5 @@ public class Details {
 		this.time = time;
 		this.description = (matcherd.group(1) + " " + matcherd.group(3)).trim();
 		this.isDelete = 0;
-	}
-
-	public String getTime(){
-		return this.time;
-	}
-
-	public String getDescription(){
-		return this.description;
 	}
 }
