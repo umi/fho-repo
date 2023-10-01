@@ -51,20 +51,20 @@ public class ImportController {
 		Pattern pattern = Pattern.compile(".*https://www\\.youtube\\.com/live/([^?]+).*");
         Matcher matcherYouTubeID = pattern.matcher(contents.get(i));
 			
-		Pattern dPattern = Pattern.compile(".*?\\d{1,2}:\\d{2}(?::\\d{2})?～.*");
+		Pattern dPattern = Pattern.compile("\\s*[^\\(]*?\\d{1,2}:\\d{2}(?::\\d{2})?～\\s*.*");
 		Matcher matcherd = dPattern.matcher(contents.get(i));
 		Matcher matcherafter = dPattern.matcher(contents.get(i + 1));
 			
 			if(!(matcherDate.matches() || matcherYouTubeID.matches())){
 				if(matcherd.matches()){	
-					temp1 = contents.get(i);
+					temp1 = contents.get(i).trim();
 				}
 				if(matcherafter.matches() && !temp1.equals("")){
-						Details detail = detailsService.setDetails(temp1, id);
-						data.add(detail.getTime() + " | " + detail.getDescription());
-						temp1 = "";
+					Details detail = detailsService.setDetails(temp1.trim(), id);
+					data.add(detail.getTime() + " | " + detail.getDescription());
+					temp1 = "";
 				}else{
-					temp1 = temp1 + " " + contents.get(i + 1);
+					temp1 = temp1.trim() + " " + contents.get(i + 1).trim();
 				}
 			}
 		

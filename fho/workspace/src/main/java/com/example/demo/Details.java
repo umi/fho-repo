@@ -34,10 +34,10 @@ public class Details {
 	public void setContent(String content, int id){
 		String timeString = "";
 		String time = "";
-		Pattern dPattern = Pattern.compile(".*?(\\d{1,2}:\\d{2}(?::\\d{2})?)～(.*)");
+		Pattern dPattern = Pattern.compile("\\s*([^\\(]*?)(\\d{1,2}:\\d{2}(?::\\d{2})?)～\\s*(.*)");
 		Matcher matcherd = dPattern.matcher(content);
 		if(matcherd.matches()){
-			timeString = matcherd.group(1);
+			timeString = matcherd.group(2);
 			time = "00:00:00".substring(0, 8 - timeString.length()) + timeString;
 		}else{
 			// 不正なフォーマットの場合、原文を返すなどのエラー処理をここに記述します。
@@ -45,7 +45,7 @@ public class Details {
 		}
 		this.id = id;
 		this.time = time;
-		this.description = matcherd.group(2);
+		this.description = (matcherd.group(1) + " " + matcherd.group(3)).trim();
 		this.isDelete = 0;
 	}
 
