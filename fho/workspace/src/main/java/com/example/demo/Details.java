@@ -31,43 +31,29 @@ public class Details {
     @Column(nullable = false)
     private int isDelete;
 	
-
 	public void setContent(String content, int id){
 		String timeString = "";
 		String time = "";
-		
-		Pattern dPattern = Pattern.compile(".*(\\d{1,2}(:\\d{2})(:\\d{2})?)～(.*)");
+		Pattern dPattern = Pattern.compile("\\s*([^\\(]*?)(\\d{1,2}:\\d{2}(?::\\d{2})?)～\\s*(.*)");
 		Matcher matcherd = dPattern.matcher(content);
 		if(matcherd.matches()){
-			timeString = matcherd.group(1);
+			timeString = matcherd.group(2);
+			time = "00:00:00".substring(0, 8 - timeString.length()) + timeString;
+		}else{
+			// 不正なフォーマットの場合、原文を返すなどのエラー処理をここに記述します。
+			time = "00:00:00";
 		}
-		String[] parts = timeString.split(":");
-		if (parts.length == 3) { // 時間が "h:mm:ss" の形式の場合
-			if(parts[0].length() == 2){
-				time = timeString;
-			}else{
-				time = "0" + timeString;
-			}
-    	} else if (parts.length == 2) { // 時間が "m:ss" の形式の場合
-	        if(parts[0].length() == 2){
-    			time = "00:" + timeString;
-	        }else{
-	        	time = "00:0" + timeString;
-	        }
-    	} else if (parts.length == 1){
-    		if(parts[0].length() == 2){
-    			time = "00:00" + timeString;
-    		}else{
-    			time = "00:00:0" + timeString;
-    		}
-    	} else{
-        // 不正なフォーマットの場合、原文を返すなどのエラー処理をここに記述します。
-        	time = "00:00:00";
-    	}
-		
-		        this.id = id;
-		        this.time = time;
-		        this.description = matcherd.group(4);
-		        this.isDelete = 0;
+		this.id = id;
+		this.time = time;
+		this.description = (matcherd.group(1) + " " + matcherd.group(3)).trim();
+		this.isDelete = 0;
+	}
+
+	public String getTime(){
+		return this.time;
+	}
+
+	public String getDescription(){
+		return this.description;
 	}
 }
