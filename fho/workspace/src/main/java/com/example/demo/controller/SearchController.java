@@ -22,6 +22,8 @@ public class SearchController {
 		
 		List<SearchResultDTO> data = searchService.searchByKeyword(description, title);
 		model.addAttribute("content", data);
+		model.addAttribute("description", description);
+		model.addAttribute("title", title);
 		return "search/index"; // or wherever you want to redirect after saving
 	}
 }
