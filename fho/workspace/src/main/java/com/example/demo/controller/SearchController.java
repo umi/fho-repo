@@ -18,9 +18,9 @@ public class SearchController {
 	 private SearchService searchService;
 
 	@GetMapping("/search")
-	public String searchDetails(@RequestParam(name="s", required=false) String keyword, Model model)  {
+	public String searchDetails(@RequestParam(name="sbox1", required=false) String title, @RequestParam(name="sbox2", required=false) String description, Model model)  {
 		
-		List<SearchResultDTO> data = searchService.searchByKeyword(keyword);
+		List<SearchResultDTO> data = searchService.searchByKeyword(description, title);
 		model.addAttribute("content", data);
 		return "search/index"; // or wherever you want to redirect after saving
 	}

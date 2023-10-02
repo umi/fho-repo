@@ -10,6 +10,6 @@ import com.example.demo.dto.SearchResultDTO;
 import com.example.demo.entity.Details;
 
 public interface SearchRepository extends Repository<Details, Integer> {
-    @Query("SELECT new com.example.demo.dto.SearchResultDTO(d.id,  f.title, d.time, d.description, f.streamStart) FROM Details d LEFT JOIN Fho f ON d.id = f.id WHERE d.description like CONCAT('%', :keyword, '%')")
-    public List<SearchResultDTO> searchDetails(@Param("keyword") String keyword);
+    @Query("SELECT new com.example.demo.dto.SearchResultDTO(d.id,  f.title, d.time, d.description, f.streamStart) FROM Details d LEFT JOIN Fho f ON d.id = f.id WHERE d.description like CONCAT('%', :description, '%') and f.title like CONCAT('%', :title, '%') ")
+    public List<SearchResultDTO> searchDetails(@Param("description") String description, @Param("title") String title);
 }
