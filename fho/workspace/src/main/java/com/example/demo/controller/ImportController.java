@@ -14,16 +14,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.demo.entity.Details;
 import com.example.demo.entity.Fho;
-import com.example.demo.repository.DetailsRepository;
 import com.example.demo.service.DetailsService;
 import com.example.demo.service.FhoService;
 import com.example.demo.util.DocumentParser;
 
 @Controller
 public class ImportController {
-	@Autowired
-    private DetailsRepository detailsRepository;
-	
 	@Autowired
     private FhoService fhoService;
 	
