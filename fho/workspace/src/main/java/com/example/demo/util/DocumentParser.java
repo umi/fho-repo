@@ -26,7 +26,7 @@ public class DocumentParser {
 		StringBuilder streamStart = new StringBuilder(256);
 		boolean isTitle = false;
 
-		Pattern datePattern = Pattern.compile("(\\d{1,2}/\\d{1,2})\\s+(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*([^\\(]*)(?:\\((\\d{2}:\\d{2})～\\))?(.*)");
+		Pattern datePattern = Pattern.compile(".*(\\d{1,2}/\\d{1,2})\\s+(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*([^\\(]*)(?:\\((\\d{2}:\\d{2})～\\))?(.*)");
 		Pattern pattern = Pattern.compile("^\\s*https://(?:www\\.youtube\\.com/(?:live/([^?]+)|watch\\?v=([^&]+)).*|youtu\\.be/(.+))");
 		Pattern dPattern = Pattern.compile("^\\s*[^\\(]*?\\d{1,2}:\\d{2}(?::\\d{2})?～\\s*.*");
 
