@@ -7,16 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 @Entity
 @Data
-@Getter
-@Setter
 @Table(name = "fho_info")
 public class Fho {
     @Id
