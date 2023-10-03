@@ -16,8 +16,12 @@ public class FhoService {
     public List<Fho> getFho() {
         return fhoRepository.findAll();
     }
+
+	public int lastInsertId() {
+		return fhoRepository.lastInsertId();
+	}
 	
-	public void setFho(Fho fho) {
+	public void setData(Fho fho) {
 		fhoRepository.save(fho);
 	}
 }

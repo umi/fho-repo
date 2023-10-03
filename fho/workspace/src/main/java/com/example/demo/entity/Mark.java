@@ -10,21 +10,16 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "stream_info")
-public class Details {
+@Table(name = "mark_info")
+public class Mark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int streamId;
+    private int markId;
 
     @Column(nullable = false)
-    private int id;
+    private String mark;
 
     @Column(nullable = false)
-    private String time;
+    private String markDescription;
 
-    @Column(nullable = false)
-    private String description;
-    
-    @Column(nullable = false)
-    private int isDelete;
 }
