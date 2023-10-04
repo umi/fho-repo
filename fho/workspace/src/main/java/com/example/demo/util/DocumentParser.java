@@ -12,6 +12,9 @@ import com.example.demo.entity.Fho;
 
 import lombok.Getter;
 
+/**
+ * メモデータのパース
+ */
 public class DocumentParser {
 	@Getter
 	private Fho fho;
@@ -22,33 +25,35 @@ public class DocumentParser {
 	@Getter
 	private ArrayList<String> smark;
 
+	/**
+	 * メモデータ1件分からデータ抽出してfhoとstreamsに格納
+	 * @param List<String> contents
+	 * @return void
+	 */
 	public void parse(List<String> contents) {
 		this.clear();
 		StringBuilder content = new StringBuilder(256);
 		StringBuilder streamStart = new StringBuilder(256);
 		boolean isTitle = false;
 
-		// 👑9/1    3:12:23    少し(22:42～) のようなパターンの検出　末尾に文字が入った場合も対応　
-		Pattern datePattern = Pattern.compile(".*(\\d{1,2}/\\d{1,2})\\s+(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*([^\\(]*)(?:\\((\\d{2}:\\d{2})～\\))?(.*)");
-		
-		// https://www.youtube.com/live/0gl5HYfZimw?si=P3nMxUhf1s2BpA5n 
-		// https://youtu.be/xi8L0gWq9hM                                     のようなパターンの検出(3パターン)
-		Pattern pattern = Pattern.compile("^\\s*https://(?:www\\.youtube\\.com/(?:live/([^?]+)|watch\\?v=([^&]+)).*|youtu\\.be/(.+))");
-		
-		// 1:17:36～結構首都覚えましたか？ アフリカばっかで… のようなパターンの検出
-		Pattern dPattern = Pattern.compile("^\\s*[^\\(]*?\\d{1,2}:\\d{2}(?::\\d{2})?～\\s*.*");
+		// 日付 タイトル 時間
+		Pattern headPattern = this.getHeadLinePattern();
+		// stream line
+		Pattern streamPattern = this.getStreamLinePattern();
+		// url
+		Pattern urlPattern = this.getYoutubePattern();
 
 		int i = 0;
 		for (String line: contents){
-			Matcher matcherDate = datePattern.matcher(line);
-			Matcher matcherYouTubeID = pattern.matcher(line);
-			Matcher matcherd = dPattern.matcher(line);
-			Matcher matcherAfter = dPattern.matcher("");
-			Matcher matcherYoutubeAfter = dPattern.matcher("");
+			Matcher matcherHead = headPattern.matcher(line);
+			Matcher matcherYouTubeID = urlPattern.matcher(line);
+			Matcher matcherStream = streamPattern.matcher(line);
+			Matcher matcherStreamAfter = streamPattern.matcher("");
+			Matcher matcherYoutubeAfter = streamPattern.matcher("");
 			//次の行の形式確認用
 			if(contents.size() > i + 1){
-				matcherAfter = dPattern.matcher(contents.get(i + 1));
-				matcherYoutubeAfter = pattern.matcher(contents.get(i + 1));
+				matcherStreamAfter = streamPattern.matcher(contents.get(i + 1));
+				matcherYoutubeAfter = urlPattern.matcher(contents.get(i + 1));
 			}
 			
 			//URLパターンにマッチした場合
@@ -56,57 +61,58 @@ public class DocumentParser {
 				//YouTubeID 3パターンのいずれかを取り込む
 				for(int j = 1; j < 4; j++){
 					if(Objects.nonNull(matcherYouTubeID.group(j))){
-						this.fho.setYoutubeId(matcherYouTubeID.group(j));
+						fho.setYoutubeId(matcherYouTubeID.group(j));
+						break;
 					}
 				}
 			}else{
 				//日付・タイトル・総配信時間行にマッチした場合
-				if(matcherDate.matches()){
-					streamStart.delete(0, streamStart.length());
+				if(matcherHead.matches()){
 					// fho_infoの開始日時
-					streamStart.append(matcherDate.group(1));
-					if (Objects.nonNull(matcherDate.group(4))) {
-						streamStart.append(" ").append(matcherDate.group(4));
+					streamStart.delete(0, streamStart.length());
+					streamStart.append(matcherHead.group(1));
+					if (Objects.nonNull(matcherHead.group(4))) {
+						streamStart.append(" ").append(matcherHead.group(4));
 					}
-					content.delete(0, content.length());
 					//タイトルの作成
-					if(Objects.nonNull(matcherDate.group(3))){
-						content.append(matcherDate.group(3).strip());
+					content.delete(0, content.length());
+					if(Objects.nonNull(matcherHead.group(3))){
+						content.append(matcherHead.group(3).strip());
 					}
-					if(Objects.nonNull(matcherDate.group(5))){
-						content.append(matcherDate.group(5).strip());
+					if(Objects.nonNull(matcherHead.group(5))){
+						content.append(matcherHead.group(5).strip());
 					}
-					this.fho.setStreamStart(streamStart.toString());
-					this.fho.setTotal(TimeToSecondsConverter.convertToSeconds(matcherDate.group(2)));
-					this.fho.setIsMember(0);
-					this.fho.setIsDelete(0);
+					fho.setStreamStart(streamStart.toString());
+					fho.setTotal(TimeToSecondsConverter.convertToSeconds(matcherHead.group(2)));
+					fho.setIsMember(0);
+					fho.setIsDelete(0);
 
 					isTitle = true;
 					
 				//内容の行にマッチした場合
-				}else if(matcherd.matches()){
+				}else if(matcherStream.matches()){
 					content.delete(0, content.length()).append(line.strip());
 					isTitle = false;
 				}
 			}
 			//（次が内容行の形式かURLの場合） かつ （contentにデータが格納されている、または、タイトルフラグが立っている場合）
-			if((matcherYoutubeAfter.matches() || matcherAfter.matches()) && (content.length() > 0 || isTitle)){
+			if((matcherYoutubeAfter.matches() || matcherStreamAfter.matches()) && (content.length() > 0 || isTitle)){
 				if(isTitle){
 					//タイトルを格納
-					this.fho.setTitle(content.toString().strip());
+					fho.setTitle(content.toString().strip());
 					isTitle = false;
 				}else{
 					List<String> lineparts = this.createDetails(content.toString().strip());
 					Details details = new Details();
 					
 					//streamMarkに格納するためのマークをset
-					this.smark.add(lineparts.get(0));
+					smark.add(lineparts.get(0));
 					
 					details.setTime(lineparts.get(1));
 					details.setDescription(lineparts.get(2));
 					details.setIsDelete(0);
 					//stream_infoに格納するデータset
-					this.streams.add(details);
+					streams.add(details);
 				}
 				content.delete(0, content.length());
 			}else if(!matcherYouTubeID.matches()){
@@ -116,32 +122,65 @@ public class DocumentParser {
 		}
 	}
 
+	/**
+	 * メンバー変数の初期化
+	 * @return void
+	 */
 	public void clear(){
-		this.fho = new Fho();
-		this.streams = new ArrayList<Details>();
-		this.smark = new ArrayList<String>();
+		fho = new Fho();
+		streams = new ArrayList<Details>();
+		smark = new ArrayList<String>();
 	}
 
 	private List<String> createDetails(String line){
 		List<String> lineparts = new ArrayList<>();
 		StringBuilder time = new StringBuilder("00:00:00");
-		Pattern dPattern = Pattern.compile("\\s*([^\\(]*?)(\\d{1,2}:\\d{2}(?::\\d{2})?)～\\s*(.*)");
-		Matcher matcherd = dPattern.matcher(line);
+		Pattern streamPattern = this.getStreamLinePattern();
+		Matcher matcherStream = streamPattern.matcher(line);
 		
 		//（時間の前にマークがあってもOK）内容の行とマッチした場合
-		if(matcherd.matches()){
+		if(matcherStream.matches()){
 			//マークの格納（時間の前にあるマーク）
-			lineparts.add(matcherd.group(1));
-			String timeString = matcherd.group(2);
+			lineparts.add(matcherStream.group(1));
+			String timeString = matcherStream.group(2);
 			time.replace(time.length() - timeString.length(), time.length(), timeString);
 		}else{
 			// 不正なフォーマットの場合、原文を返すなどのエラー処理をここに記述します。
 		}
-		//stream_infoにチェックポイント時間と内容を格納
+		//チェックポイント時間と内容を格納
 		lineparts.add(time.toString());
-		lineparts.add(matcherd.group(3));
+		lineparts.add(matcherStream.group(3));
 
 		return lineparts;
+	}
+
+	/**
+	 * 👑9/1    3:12:23    少し(22:42～)
+	 * のようなパターンの検出 末尾に文字が入った場合も対応
+	 * @return Pattern
+	 */
+	public Pattern getHeadLinePattern() {
+		return Pattern.compile(".*(\\d{1,2}/\\d{1,2})\\s+(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*([^\\(]*)(?:\\((\\d{2}:\\d{2})～\\))?(.*)");
+	}
+
+	/**
+	 * 1:17:36～結構首都覚えましたか？ アフリカばっかで… 
+	 * のようなパターンの検出
+	 * @return Pattern
+	 */
+	public Pattern getStreamLinePattern() {
+		return Pattern.compile("^\\s*([^\\(]*?)(\\d{1,2}:\\d{2}(?::\\d{2})?)～\\s*(.*)");
+	}
+
+	/**
+	 * https://www.youtube.com/live/0gl5HYfZimw?si=P3nMxUhf1s2BpA5n 
+	 * https://www.youtube.com/watch?v=0gl5HYfZimw&ab_channel=
+	 * https://youtu.be/0gl5HYfZimw
+	 * のようなパターンの検出(3パターン)
+	 * @return Pattern
+	 */
+	public Pattern getYoutubePattern() {
+		return Pattern.compile("^\\s*https://(?:www\\.youtube\\.com/(?:live/([^?]+)|watch\\?v=([^&]+)).*|youtu\\.be/(.+))");
 	}
 
 }
