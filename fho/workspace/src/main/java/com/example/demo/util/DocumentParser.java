@@ -49,7 +49,7 @@ public class DocumentParser {
 			Matcher matcherYouTubeID = urlPattern.matcher(line);
 			Matcher matcherStream = streamPattern.matcher(line);
 			Matcher matcherStreamAfter = streamPattern.matcher("");
-			Matcher matcherYoutubeAfter = streamPattern.matcher("");
+			Matcher matcherYoutubeAfter = urlPattern.matcher("");
 			//次の行の形式確認用
 			if(contents.size() > i + 1){
 				matcherStreamAfter = streamPattern.matcher(contents.get(i + 1));
