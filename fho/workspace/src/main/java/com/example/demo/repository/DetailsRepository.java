@@ -1,11 +1,12 @@
 package com.example.demo.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.example.demo.entity.Details;
-import java.util.List;
 
 
 @Repository
@@ -13,6 +14,6 @@ public interface DetailsRepository extends JpaRepository<Details, Integer> {
 	@Query("SELECT d FROM Details d WHERE d.id = ?1")
 	public List<Details> findByIdCustom(int id);
 	
-	@Query("SELECT MAX(d.id) FROM Details d")
-	int findMaxId();
+	@Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
+	int lastInsertId();
 }

@@ -2,6 +2,8 @@ package com.example.demo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -12,16 +14,13 @@ import lombok.Data;
 public class StreamMark {
 
 	@Id
-	@Column(nullable = true)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private int streamMarkId;
 	
-    @Column(nullable = true)
+    @Column(nullable = false)
     private int streamId;
 
-    @Column(nullable = true)
-    private int num;
-
-    @Column(nullable = true)
+    @Column(nullable = false)
     private int markId;
 
 }

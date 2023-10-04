@@ -1,17 +1,16 @@
 package com.example.demo.controller;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class ReadFileController {
