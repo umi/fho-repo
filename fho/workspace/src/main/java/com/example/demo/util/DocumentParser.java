@@ -14,10 +14,13 @@ import lombok.Getter;
 
 public class DocumentParser {
 	@Getter
-	private Fho fho; 
+	private Fho fho;
 
 	@Getter
-	private ArrayList<Details> streams; 
+	private ArrayList<Details> streams;
+	
+	@Getter
+	private ArrayList<String> smark;
 
 	public void parse(List<String> contents) {
 		this.clear();
@@ -93,7 +96,16 @@ public class DocumentParser {
 					this.fho.setTitle(content.toString().strip());
 					isTitle = false;
 				}else{
-					Details details = this.createDetails(content.toString().strip());
+					List<String> lineparts = this.createDetails(content.toString().strip());
+					Details details = new Details();
+					
+					//streamMarkに格納するためのマークをset
+					this.smark.add(lineparts.get(0));
+					
+					details.setTime(lineparts.get(1));
+					details.setDescription(lineparts.get(2));
+					details.setIsDelete(0);
+					//stream_infoに格納するデータset
 					this.streams.add(details);
 				}
 				content.delete(0, content.length());
@@ -107,30 +119,29 @@ public class DocumentParser {
 	public void clear(){
 		this.fho = new Fho();
 		this.streams = new ArrayList<Details>();
+		this.smark = new ArrayList<String>();
 	}
 
-	private Details createDetails(String line){
-		Details details = new Details();
+	private List<String> createDetails(String line){
+		List<String> lineparts = new ArrayList<>();
 		StringBuilder time = new StringBuilder("00:00:00");
 		Pattern dPattern = Pattern.compile("\\s*([^\\(]*?)(\\d{1,2}:\\d{2}(?::\\d{2})?)～\\s*(.*)");
 		Matcher matcherd = dPattern.matcher(line);
-		StringBuilder info = new StringBuilder();
 		
-		//内容の行とマッチした場合
+		//（時間の前にマークがあってもOK）内容の行とマッチした場合
 		if(matcherd.matches()){
-			//👑2:04:51～ビクロイ → info = 👑 ビクロイ
-			info.append(matcherd.group(1)).append(" ").append(matcherd.group(3));
+			//マークの格納（時間の前にあるマーク）
+			lineparts.add(matcherd.group(1));
 			String timeString = matcherd.group(2);
 			time.replace(time.length() - timeString.length(), time.length(), timeString);
 		}else{
 			// 不正なフォーマットの場合、原文を返すなどのエラー処理をここに記述します。
 		}
 		//stream_infoにチェックポイント時間と内容を格納
-		details.setTime(time.toString());
-		details.setDescription(info.toString().strip());
-		details.setIsDelete(0);
+		lineparts.add(time.toString());
+		lineparts.add(matcherd.group(3));
 
-		return details;
+		return lineparts;
 	}
 
 }

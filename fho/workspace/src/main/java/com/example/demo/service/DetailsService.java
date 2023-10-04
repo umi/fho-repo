@@ -22,4 +22,8 @@ public class DetailsService {
 		details.setId(id);
 		detailsRepository.save(details);
 	}
+	
+	public int lastInsertId() {
+		return detailsRepository.lastInsertId();
+	}
 }

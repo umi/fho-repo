@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.demo.entity.Details;
 import com.example.demo.entity.Fho;
+import com.example.demo.repository.MarkRepository;
 import com.example.demo.service.DetailsService;
 import com.example.demo.service.FhoService;
+import com.example.demo.service.StreamMarkService;
 import com.example.demo.util.DocumentParser;
 
 @Controller
@@ -25,6 +27,12 @@ public class ImportController {
 	
 	@Autowired
     private DetailsService detailsService;
+	
+	@Autowired
+    private StreamMarkService StreamMarkService;
+	
+	@Autowired
+	private MarkRepository markRepository;
 
     @Autowired
     private PlatformTransactionManager txManager;
@@ -33,7 +41,10 @@ public class ImportController {
 	public String insertFho(Model model) {
 		List<String> contents = ReadFileController.readFileContent();
 		List<String> data = new ArrayList<>();
+		int markId = 0;
+		int j = 0;
 
+		//
 		DocumentParser parser = new DocumentParser();
 		parser.parse(contents);
 
@@ -46,6 +57,7 @@ public class ImportController {
 
 			Fho fho = parser.getFho();
 			List<Details> list = parser.getStreams();
+			List<String> smark = parser.getSmark();
 			
 			//fho_infoにデータINSERT
 			fhoService.setData(fho);
@@ -55,9 +67,18 @@ public class ImportController {
 			//stream_infoにデータを挿入
 			for(Details details: list){
 				detailsService.setData(details, fhoId);
+				int streamId = detailsService.lastInsertId();
+				if(!smark.get(j).isEmpty()){
+					markId = markRepository.idFindByMark(smark.get(j));
+				}
+				if(markId > 0) {
+					StreamMarkService.setData(streamId, markId);
+				}
+				markId = 0;
+				j++;
 				data.add(details.getTime() + " | " + details.getDescription());
 			}
-
+			
 			txManager.commit(status);
 		}catch(Exception e){
 			data.clear();

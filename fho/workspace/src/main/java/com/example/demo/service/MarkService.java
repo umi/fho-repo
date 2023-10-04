@@ -9,4 +9,8 @@ import com.example.demo.repository.MarkRepository;
 public class MarkService {
 	@Autowired
     private MarkRepository markRepository;
+	
+	public int idFindByMark(String mark) {
+		return markRepository.idFindByMark(mark);
+	}
 }
