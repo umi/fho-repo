@@ -1,8 +1,5 @@
 package com.example.demo;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
 public class TimeToSecondsConverter {
     public static int convertToSeconds(String timeString) {
 		if (timeString.isEmpty()) {

@@ -22,8 +22,6 @@ public class DocumentParser {
 	public void parse(List<String> contents) {
 		this.clear();
 		StringBuilder content = new StringBuilder(256);
-		String date = "";
-		String startTime = "";
 		StringBuilder streamStart = new StringBuilder(256);
 		boolean isTitle = false;
 
@@ -39,9 +37,9 @@ public class DocumentParser {
 
 		int i = 0;
 		for (String line: contents){
-			Matcher matcherDate = datePattern.matcher(contents.get(i));
-			Matcher matcherYouTubeID = pattern.matcher(contents.get(i));
-			Matcher matcherd = dPattern.matcher(contents.get(i));
+			Matcher matcherDate = datePattern.matcher(line);
+			Matcher matcherYouTubeID = pattern.matcher(line);
+			Matcher matcherd = dPattern.matcher(line);
 			Matcher matcherAfter = dPattern.matcher("");
 			Matcher matcherYoutubeAfter = dPattern.matcher("");
 			//次の行の形式確認用
@@ -84,7 +82,7 @@ public class DocumentParser {
 					
 				//内容の行にマッチした場合
 				}else if(matcherd.matches()){
-					content.delete(0, content.length()).append(contents.get(i).strip());
+					content.delete(0, content.length()).append(line.strip());
 					isTitle = false;
 				}
 			}
