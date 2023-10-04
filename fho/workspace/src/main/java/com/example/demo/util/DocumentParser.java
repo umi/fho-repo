@@ -34,7 +34,7 @@ public class DocumentParser {
 		this.clear();
 		StringBuilder content = new StringBuilder(256);
 		StringBuilder streamStart = new StringBuilder(256);
-		boolean isTitle = false;
+		boolean isTitleInserted = false;
 
 		// 日付 タイトル 時間
 		Pattern headPattern = this.getHeadLinePattern();
@@ -67,7 +67,7 @@ public class DocumentParser {
 				}
 			}else{
 				//日付・タイトル・総配信時間行にマッチした場合
-				if(matcherHead.matches()){
+				if(!isTitleInserted && matcherHead.matches()){
 					// fho_infoの開始日時
 					streamStart.delete(0, streamStart.length());
 					streamStart.append(matcherHead.group(1));
@@ -86,21 +86,18 @@ public class DocumentParser {
 					fho.setTotal(TimeToSecondsConverter.convertToSeconds(matcherHead.group(2)));
 					fho.setIsMember(0);
 					fho.setIsDelete(0);
-
-					isTitle = true;
 					
 				//内容の行にマッチした場合
 				}else if(matcherStream.matches()){
 					content.delete(0, content.length()).append(line.strip());
-					isTitle = false;
 				}
 			}
 			//（次が内容行の形式かURLの場合） かつ （contentにデータが格納されている、または、タイトルフラグが立っている場合）
-			if((matcherYoutubeAfter.matches() || matcherStreamAfter.matches()) && (content.length() > 0 || isTitle)){
-				if(isTitle){
+			if((matcherYoutubeAfter.matches() || matcherStreamAfter.matches()) && (content.length() > 0 || !isTitleInserted)){
+				if(!isTitleInserted){
 					//タイトルを格納
 					fho.setTitle(content.toString().strip());
-					isTitle = false;
+					isTitleInserted = true;
 				}else{
 					List<String> lineparts = this.createDetails(content.toString().strip());
 					Details details = new Details();
@@ -160,7 +157,7 @@ public class DocumentParser {
 	 * @return Pattern
 	 */
 	public Pattern getHeadLinePattern() {
-		return Pattern.compile(".*(\\d{1,2}/\\d{1,2})\\s+(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*([^\\(]*)(?:\\((\\d{2}:\\d{2})～\\))?(.*)");
+		return Pattern.compile(".*(\\d{1,2}/\\d{1,2})\\s+(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*([^\\(]*)(?:\\((\\d{1,2}:\\d{2})～\\))?(.*)");
 	}
 
 	/**
@@ -169,7 +166,7 @@ public class DocumentParser {
 	 * @return Pattern
 	 */
 	public Pattern getStreamLinePattern() {
-		return Pattern.compile("^\\s*([^\\(]*?)(\\d{1,2}:\\d{2}(?::\\d{2})?)～\\s*(.*)");
+		return Pattern.compile("^\\s*([^※\\(]*?)(\\d{1,2}:\\d{2}(?::\\d{2})?)～\\s*(.*)");
 	}
 
 	/**
