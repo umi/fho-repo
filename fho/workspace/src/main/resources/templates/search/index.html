@@ -7,11 +7,20 @@
 </head>
 <body>
 
-<h1><font color="red">フォートナイト下手くそおじさん検索エンジン</font></h1>
+<h1><font color="red">フォートナイト下手くそおじさん</font>検索エンジン</h1>
 <form id="form1" th:action="@{/search}" method="get">
-<input id="sbox1" name="sbox1" type="text" th:value="${title}" placeholder="タイトル" />
-<input id="sbox2" name="sbox2" type="text" th:value="${description}" placeholder="詳細" />
-<input id="sbtn1" type="submit" value="検索" /></form>
+<p>タイトル：<input id="sbox1" name="sbox1" type="text" th:value="${title}" placeholder="タイトル" /></p>
+<p>　内容　：<input id="sbox2" name="sbox2" type="text" th:value="${description}" placeholder="詳細" /></p>
+  　マーク：<select name="mark">
+	            <option value="00"></option>
+	            <option
+	                th:each="mark : ${mark}"
+	                th:value="${mark.markId}"
+	                th:text="${mark.mark}"
+	                th:selected="${mark.markId == selectedValue}">
+	            </option>
+        	</select>
+<p><input id="sbtn1" type="submit" value="検索" /></p></form>
 
 <button onclick="location.href='/'">戻る</button>
     <table border=1>
