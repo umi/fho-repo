@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -69,7 +70,8 @@ public class ImportController {
 				detailsService.setData(details, fhoId);
 				int streamId = detailsService.lastInsertId();
 				if(!smark.get(j).isEmpty()){
-					markId = markRepository.idFindByMark(smark.get(j));
+					Optional<Integer> a = markRepository.idFindByMark(smark.get(j));
+					markId = a.orElse(0) ;
 				}
 				if(markId > 0) {
 					StreamMarkService.setData(streamId, markId);
