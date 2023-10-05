@@ -26,7 +26,7 @@ public class DocumentParser {
 	private ArrayList<String> smark;
 
 	/**
-	 * メモデータ1件分からデータ抽出してfhoとstreamsに格納
+	 * メモデータ1件分からデータ抽出してメンバー変数へ格納
 	 * @param List<String> contents
 	 * @return void
 	 */
