@@ -156,7 +156,7 @@ public class DocumentParser {
 	 * のようなパターンの検出 末尾に文字が入った場合も対応
 	 * @return Pattern
 	 */
-	public Pattern getHeadLinePattern() {
+	public static Pattern getHeadLinePattern() {
 		return Pattern.compile(".*(\\d{1,2}/\\d{1,2})\\s+(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*([^\\(]*)(?:\\((\\d{1,2}:\\d{2})～\\))?(.*)");
 	}
 
@@ -165,7 +165,7 @@ public class DocumentParser {
 	 * のようなパターンの検出
 	 * @return Pattern
 	 */
-	public Pattern getStreamLinePattern() {
+	public static Pattern getStreamLinePattern() {
 		return Pattern.compile("^\\s*([^※\\(]*?)(\\d{1,2}:\\d{2}(?::\\d{2})?)～\\s*(.*)");
 	}
 
@@ -176,7 +176,7 @@ public class DocumentParser {
 	 * のようなパターンの検出(3パターン)
 	 * @return Pattern
 	 */
-	public Pattern getYoutubePattern() {
+	public static Pattern getYoutubePattern() {
 		return Pattern.compile("^\\s*https://(?:www\\.youtube\\.com/(?:live/([^?]+)|watch\\?v=([^&]+)).*|youtu\\.be/(.+))");
 	}
 

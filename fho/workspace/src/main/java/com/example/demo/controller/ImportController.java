@@ -20,6 +20,7 @@ import com.example.demo.service.DetailsService;
 import com.example.demo.service.FhoService;
 import com.example.demo.service.StreamMarkService;
 import com.example.demo.util.DocumentParser;
+import com.example.demo.util.DocumentDivider;
 
 @Controller
 public class ImportController {
@@ -39,8 +40,28 @@ public class ImportController {
     private PlatformTransactionManager txManager;
 
 	@GetMapping("/insert")
-	public String insertFho(Model model) {
-		List<String> contents = ReadFileController.readFileContent();
+	public String insert(Model model) {
+		DocumentDivider documentDivider = new DocumentDivider();
+		documentDivider.setPath("src/main/resources/upload/sample.txt");
+
+		List<String> data = new ArrayList<>();
+		data.add("=========================================================");
+		int i = 0;
+		while(documentDivider.hasNext()){
+			List<String> contents = documentDivider.next();
+			data.addAll(this.insertFho(contents));
+			data.add("=========================================================");
+			if(i > 1000){
+				break;
+			}
+			i++;
+		}
+
+		model.addAttribute("content", data);
+		return "read/index"; // or wherever you want to redirect after saving
+	}
+
+	private List<String> insertFho(List<String> contents) {
 		List<String> data = new ArrayList<>();
 		int markId = 0;
 		int j = 0;
@@ -87,7 +108,6 @@ public class ImportController {
 			data.add("エラーが発生しました。");
 		}
 
-		model.addAttribute("content", data);
-		return "read/index"; // or wherever you want to redirect after saving
+		return data;
 	}
 }
