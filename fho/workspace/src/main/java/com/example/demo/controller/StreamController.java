@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.demo.entity.Details;
-import com.example.demo.service.DetailsService;
+import com.example.demo.entity.Stream;
+import com.example.demo.service.StreamService;
 
 @Controller
-@RequestMapping("/details")
-public class DetailsController {
+@RequestMapping("/stream")
+public class StreamController {
     @Autowired
-    private DetailsService detailsService;
+    private StreamService streamService;
 
 	@GetMapping("{id}")
     public String index(@PathVariable("id") Integer id, Model model) {
-        List<Details> details = detailsService.findById(id);
-        model.addAttribute("details", details);
-        return "details/index";
+        List<Stream> stream = streamService.findById(id);
+        model.addAttribute("stream", stream);
+        return "stream/index";
     }
 }
