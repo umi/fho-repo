@@ -7,8 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.example.demo.TimeToSecondsConverter;
-import com.example.demo.entity.Details;
 import com.example.demo.entity.Fho;
+import com.example.demo.entity.Stream;
 
 import lombok.Getter;
 
@@ -20,13 +20,13 @@ public class DocumentParser {
 	private Fho fho;
 
 	@Getter
-	private ArrayList<Details> streams;
+	private ArrayList<Stream> streams;
 	
 	@Getter
 	private ArrayList<String> smark;
 
 	/**
-	 * メモデータ1件分からデータ抽出してfhoとstreamsに格納
+	 * メモデータ1件分からデータ抽出してメンバー変数へ格納
 	 * @param List<String> contents
 	 * @return void
 	 */
@@ -99,17 +99,17 @@ public class DocumentParser {
 					fho.setTitle(content.toString().strip());
 					isTitleInserted = true;
 				}else{
-					List<String> lineparts = this.createDetails(content.toString().strip());
-					Details details = new Details();
+					List<String> lineparts = this.createStream(content.toString().strip());
+					Stream stream = new Stream();
 					
 					//streamMarkに格納するためのマークをset
 					smark.add(lineparts.get(0));
 					
-					details.setTime(lineparts.get(1));
-					details.setDescription(lineparts.get(2));
-					details.setIsDelete(0);
+					stream.setTime(lineparts.get(1));
+					stream.setDescription(lineparts.get(2));
+					stream.setIsDelete(0);
 					//stream_infoに格納するデータset
-					streams.add(details);
+					streams.add(stream);
 				}
 				content.delete(0, content.length());
 			}else if(!matcherYouTubeID.matches()){
@@ -125,11 +125,11 @@ public class DocumentParser {
 	 */
 	public void clear(){
 		fho = new Fho();
-		streams = new ArrayList<Details>();
+		streams = new ArrayList<Stream>();
 		smark = new ArrayList<String>();
 	}
 
-	private List<String> createDetails(String line){
+	private List<String> createStream(String line){
 		List<String> lineparts = new ArrayList<>();
 		StringBuilder time = new StringBuilder("00:00:00");
 		Pattern streamPattern = this.getStreamLinePattern();
@@ -156,7 +156,7 @@ public class DocumentParser {
 	 * のようなパターンの検出 末尾に文字が入った場合も対応
 	 * @return Pattern
 	 */
-	public Pattern getHeadLinePattern() {
+	public static Pattern getHeadLinePattern() {
 		return Pattern.compile(".*(\\d{1,2}/\\d{1,2})\\s+(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*([^\\(]*)(?:\\((\\d{1,2}:\\d{2})～\\))?(.*)");
 	}
 
@@ -165,7 +165,7 @@ public class DocumentParser {
 	 * のようなパターンの検出
 	 * @return Pattern
 	 */
-	public Pattern getStreamLinePattern() {
+	public static Pattern getStreamLinePattern() {
 		return Pattern.compile("^\\s*([^※\\(]*?)(\\d{1,2}:\\d{2}(?::\\d{2})?)～\\s*(.*)");
 	}
 
@@ -176,7 +176,7 @@ public class DocumentParser {
 	 * のようなパターンの検出(3パターン)
 	 * @return Pattern
 	 */
-	public Pattern getYoutubePattern() {
+	public static Pattern getYoutubePattern() {
 		return Pattern.compile("^\\s*https://(?:www\\.youtube\\.com/(?:live/([^?]+)|watch\\?v=([^&]+)).*|youtu\\.be/(.+))");
 	}
 

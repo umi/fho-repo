@@ -21,9 +21,9 @@
         </thead>
         <tbody>
 			<tr th:each="line : ${fho}" th:object="${fho}">
-				<td><a th:href="|/details/${line.id}|">[[${line.id}]]</a></td>
+				<td><a th:href="|/stream/${line.id}|">[[${line.id}]]</a></td>
                 <td>[[${line.youtubeId}]]</td>
-                <td><a th:href="|/details/${line.id}|">[[${line.title}]]</a></td>
+                <td><a th:href="|/stream/${line.id}|">[[${line.title}]]</a></td>
                 <td>[[${line.streamStart}]]</td>
                 <td>[[${line.total}]]</td>
                 <td>[[${line.isMember}]]</td>

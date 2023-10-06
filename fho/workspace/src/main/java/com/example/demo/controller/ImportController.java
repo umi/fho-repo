@@ -13,12 +13,13 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.example.demo.entity.Details;
 import com.example.demo.entity.Fho;
+import com.example.demo.entity.Stream;
 import com.example.demo.repository.MarkRepository;
-import com.example.demo.service.DetailsService;
 import com.example.demo.service.FhoService;
 import com.example.demo.service.StreamMarkService;
+import com.example.demo.service.StreamService;
+import com.example.demo.util.DocumentDivider;
 import com.example.demo.util.DocumentParser;
 
 @Controller
@@ -27,7 +28,7 @@ public class ImportController {
     private FhoService fhoService;
 	
 	@Autowired
-    private DetailsService detailsService;
+    private StreamService streamService;
 	
 	@Autowired
     private StreamMarkService StreamMarkService;
@@ -39,8 +40,28 @@ public class ImportController {
     private PlatformTransactionManager txManager;
 
 	@GetMapping("/insert")
-	public String insertFho(Model model) {
-		List<String> contents = ReadFileController.readFileContent();
+	public String insert(Model model) {
+		DocumentDivider documentDivider = new DocumentDivider();
+		documentDivider.setPath("src/main/resources/upload/sample.txt");
+
+		List<String> data = new ArrayList<>();
+		data.add("=========================================================");
+		int i = 0;
+		while(documentDivider.hasNext()){
+			List<String> contents = documentDivider.next();
+			data.addAll(this.insertFho(contents));
+			data.add("=========================================================");
+			if(i > 1000){
+				break;
+			}
+			i++;
+		}
+
+		model.addAttribute("content", data);
+		return "read/index"; // or wherever you want to redirect after saving
+	}
+
+	private List<String> insertFho(List<String> contents) {
 		List<String> data = new ArrayList<>();
 		int markId = 0;
 		int j = 0;
@@ -57,7 +78,7 @@ public class ImportController {
 			TransactionStatus status = txManager.getTransaction(def);
 
 			Fho fho = parser.getFho();
-			List<Details> list = parser.getStreams();
+			List<Stream> list = parser.getStreams();
 			List<String> smark = parser.getSmark();
 			
 			//fho_infoにデータINSERT
@@ -66,9 +87,9 @@ public class ImportController {
 			data.add(fhoId + " | " + fho.getStreamStart() + " | " + fho.getTitle() + " | " + fho.getYoutubeId());
 			
 			//stream_infoにデータを挿入
-			for(Details details: list){
-				detailsService.setData(details, fhoId);
-				int streamId = detailsService.lastInsertId();
+			for(Stream stream: list){
+				streamService.setData(stream, fhoId);
+				int streamId = streamService.lastInsertId();
 				if(!smark.get(j).isEmpty()){
 					Optional<Integer> a = markRepository.idFindByMark(smark.get(j));
 					markId = a.orElse(0) ;
@@ -78,7 +99,7 @@ public class ImportController {
 				}
 				markId = 0;
 				j++;
-				data.add(details.getTime() + " | " + details.getDescription());
+				data.add(stream.getTime() + " | " + stream.getDescription());
 			}
 			
 			txManager.commit(status);
@@ -87,7 +108,6 @@ public class ImportController {
 			data.add("エラーが発生しました。");
 		}
 
-		model.addAttribute("content", data);
-		return "read/index"; // or wherever you want to redirect after saving
+		return data;
 	}
 }

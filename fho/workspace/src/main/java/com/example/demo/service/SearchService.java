@@ -14,7 +14,7 @@ public class SearchService {
     @Autowired
     private SearchRepository searchRepository;
 
-    public List<SearchResultDTO> searchByKeyword(String description, String title) {
-        return searchRepository.searchDetails(description, title);
+    public List<SearchResultDTO> searchByKeyword(String description, String title, int markId) {
+        return searchRepository.searchStream(description, title, markId);
     }
 }
