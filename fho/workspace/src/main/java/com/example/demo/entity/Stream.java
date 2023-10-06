@@ -11,7 +11,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "stream_info")
-public class Details {
+public class Stream {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int streamId;

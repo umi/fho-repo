@@ -15,6 +15,6 @@ public class SearchService {
     private SearchRepository searchRepository;
 
     public List<SearchResultDTO> searchByKeyword(String description, String title, int markId) {
-        return searchRepository.searchDetails(description, title, markId);
+        return searchRepository.searchStream(description, title, markId);
     }
 }

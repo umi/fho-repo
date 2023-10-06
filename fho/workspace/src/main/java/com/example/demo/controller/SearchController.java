@@ -23,7 +23,7 @@ public class SearchController {
 	private MarkService markService;
 
 	@GetMapping("/search")
-	public String searchDetails(@RequestParam(name="sbox1", required=false) String title, @RequestParam(name="sbox2", required=false) String description, @RequestParam(name="mark", required=false) Integer markId, Model model)  {
+	public String searchStream(@RequestParam(name="sbox1", required=false) String title, @RequestParam(name="sbox2", required=false) String description, @RequestParam(name="mark", required=false) Integer markId, Model model)  {
 
 		int intmarkId = (markId != null) ? markId : 0;
 		List<SearchResultDTO> data = searchService.searchByKeyword(description, title, intmarkId);
