@@ -35,6 +35,8 @@ public class DocumentParser {
 	
 	@Getter
 	private Integer id[][];
+
+	private String lastDate = "1/1";
 	
 	@Autowired
     private MarkService markService;
@@ -90,11 +92,16 @@ public class DocumentParser {
 					
 					streamStart.append(year);
 					streamStart.append(" ");
-					if(matcherHead.group(1).startsWith("0")) {
-						streamStart.append("1");
-						streamStart.append(matcherHead.group(1));
-					}else {
-						streamStart.append(matcherHead.group(1));
+					if (Objects.nonNull(matcherHead.group(1))) {
+						if(matcherHead.group(1).startsWith("0")) {
+							streamStart.append("1");
+							streamStart.append(matcherHead.group(1));
+						}else {
+							streamStart.append(matcherHead.group(1));
+						}
+						lastDate = matcherHead.group(1);
+					}else{
+						streamStart.append(lastDate);
 					}
 					
 					if (Objects.nonNull(matcherHead.group(4))) {
@@ -209,7 +216,7 @@ public class DocumentParser {
 	 * @return Pattern
 	 */
 	public static Pattern getHeadLinePattern() {
-		return Pattern.compile(".*(\\d{1,2}/\\d{1,2})\\s+(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*([^\\(]*)(?:\\((\\d{1,2}:\\d{2})～\\))?(.*)");
+		return Pattern.compile("[^\\d]*((?:\\d{2}/)?\\d{1,2}/\\d{1,2})?\\s*(\\d{1,2}:\\d{2}(?::\\d{2})?)(?!～)\\s*([^\\(]*)(?:\\((\\d{1,2}:\\d{2})～\\))?(.*)");
 	}
 
 	/**
