@@ -54,6 +54,8 @@ public class DocumentParser {
 
 		// 日付 タイトル 時間
 		Pattern headPattern = this.getHeadLinePattern();
+		
+		
 		// stream line
 		Pattern streamPattern = this.getStreamLinePattern();
 		// url
@@ -102,7 +104,11 @@ public class DocumentParser {
 					}
 					
 					String datetimeString = streamStart.toString();
+					
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy M/d H:mm"); // パターンを "yyyy M/d HH:mm" に変更
+					if (!datetimeString.contains(":")) {
+					    datetimeString += " 00:00";  // 時と分が含まれていない場合、00:00を追加
+					}
 					LocalDateTime datetime = LocalDateTime.parse(datetimeString, formatter);
 					
 					fho.setStreamStart(datetime);
