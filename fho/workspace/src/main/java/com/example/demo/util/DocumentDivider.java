@@ -7,19 +7,14 @@ import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
-import java.util.regex.Matcher;
+import java.util.List;
 import java.util.regex.Pattern;
-
-import org.springframework.core.io.ClassPathResource;
-
-import com.example.demo.util.DocumentParser;
 
 /**
  * ファイルの分割読み込み
  */
-public class DocumentDivider implements Iterator {
+public class DocumentDivider implements Iterator<List<String>> {
 
 	private String path;
 	private long currentPointer;
@@ -27,7 +22,6 @@ public class DocumentDivider implements Iterator {
 	private ArrayList<String> lineparts;
 	private Pattern headPattern;
 	private Pattern urlPattern;
-	private ClassPathResource resource;
 	private RandomAccessFile reader;
 	private Charset charset;
 
