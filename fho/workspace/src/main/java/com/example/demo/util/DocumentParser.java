@@ -76,7 +76,7 @@ public class DocumentParser {
 			//URLパターンにマッチした場合
 			if(matcherYouTubeID.matches()){
 				//YouTubeID 3パターンのいずれかを取り込む
-				for(int j = 0; j < 3; j++){
+				for(int j = 1; j <= 3; j++){
 					if(Objects.nonNull(matcherYouTubeID.group(j))){
 						fho.setYoutubeId(matcherYouTubeID.group(j));
 						break;
