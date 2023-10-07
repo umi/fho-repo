@@ -102,7 +102,7 @@ public class DocumentParser {
 					}
 					
 					String datetimeString = streamStart.toString();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy M/d HH:mm"); // パターンを "yyyy M/d HH:mm" に変更
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy M/d H:mm"); // パターンを "yyyy M/d HH:mm" に変更
 					LocalDateTime datetime = LocalDateTime.parse(datetimeString, formatter);
 					
 					fho.setStreamStart(datetime);
