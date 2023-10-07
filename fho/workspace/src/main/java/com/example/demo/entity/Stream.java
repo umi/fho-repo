@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import java.sql.Time;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +22,7 @@ public class Stream {
     private int id;
 
     @Column(nullable = false)
-    private String time;
+    private Time time;
 
     @Column(nullable = false)
     private String description;

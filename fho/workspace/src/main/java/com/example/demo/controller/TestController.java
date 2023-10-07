@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.example.demo.util.EmojiUtil;
+
 @Controller
 public class TestController {
 
@@ -15,7 +17,7 @@ public class TestController {
 	@GetMapping("/test")
     public String index(Model model) {
 		List<String> content = new ArrayList<>();
-		String str = "あい👑うえお😀かきあくけこ🚅Unicode🌏絵文字で遊んでみよう😮";
+		String str = "あい👑うえお😀かきあくけこ🚅Unic𩸽ode🌏絵文字で遊んでみよう😮𡽶𥻘𦥑𨵱";
 
 		// Pattern emojiPattern = Pattern.compile("[\\uD800-\\uDFFF]", Pattern.UNICODE_CASE);
 		// Pattern emojiPattern = Pattern.compile("\\X", Pattern.UNICODE_CASE);
@@ -29,7 +31,7 @@ public class TestController {
 			}
 		}
 
-		content.add("絵文字なし:" + String.valueOf(containsEmoji("絵文字なし")));
+		content.add("絵文字なし𩸽:" + String.valueOf(containsEmoji("絵文字なし𩸽")));
 		content.add("絵文字あり🐟🍎🍐:" + String.valueOf(containsEmoji("絵文字あり🐟🍎🍐")));
 
 		content.add("end");
@@ -44,16 +46,7 @@ public class TestController {
 	 * @return boolean
 	 */
 	private static boolean containsEmoji(String str) {
-		int length = str.length();
-
-		for (int i = 0; i < length; i++) {
-			int type = Character.getType(str.charAt(i));
-			if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
-				return true;
-			}
-		}
-
-		return false;
+		return EmojiUtil.contains(str);
 	}
 }
 
