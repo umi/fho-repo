@@ -1,8 +1,8 @@
 package com.example.demo.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.SearchResultDTO;
@@ -14,7 +14,10 @@ public class SearchService {
     @Autowired
     private SearchRepository searchRepository;
 
-    public List<SearchResultDTO> searchByKeyword(String description, String title, int markId) {
-        return searchRepository.searchStream(description, title, markId);
+    public Page<SearchResultDTO> searchByKeyword(String description, String title, int markId, PageRequest pageable) {
+        return searchRepository.searchStream(description, title, markId, pageable);
+    }
+    public Page<SearchResultDTO> searchByOnlyKeyword (String description, String title, PageRequest pageable) {
+    	return searchRepository.searchOnlyKeywordStream(description, title, pageable);
     }
 }
