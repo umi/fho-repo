@@ -87,8 +87,16 @@ public class DocumentParser {
 				if(!isTitleInserted && matcherHead.matches()){
 					// fho_infoの開始日時
 					streamStart.delete(0, streamStart.length());
+					
 					streamStart.append(year);
-					streamStart.append(" ").append(matcherHead.group(1));
+					streamStart.append(" ");
+					if(matcherHead.group(1).startsWith("0")) {
+						streamStart.append("1");
+						streamStart.append(matcherHead.group(1));
+					}else {
+						streamStart.append(matcherHead.group(1));
+					}
+					
 					if (Objects.nonNull(matcherHead.group(4))) {
 						streamStart.append(" ").append(matcherHead.group(4));
 					}
