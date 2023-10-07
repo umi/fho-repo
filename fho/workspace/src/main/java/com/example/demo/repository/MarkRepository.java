@@ -14,5 +14,7 @@ public interface MarkRepository extends JpaRepository<Mark, Integer>{
 	Optional<Integer> idFindByMark(String mark);
 	
 	public List<Mark> findAll();
-
+	
+	@Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
+	int lastInsertId();
 }

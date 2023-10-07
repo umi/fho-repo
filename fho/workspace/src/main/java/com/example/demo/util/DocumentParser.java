@@ -6,15 +6,20 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.demo.TimeToSecondsConverter;
 import com.example.demo.entity.Fho;
 import com.example.demo.entity.Stream;
+import com.example.demo.service.MarkService;
 
 import lombok.Getter;
 
 /**
  * メモデータのパース
  */
+@Service
 public class DocumentParser {
 	@Getter
 	private Fho fho;
@@ -23,7 +28,11 @@ public class DocumentParser {
 	private ArrayList<Stream> streams;
 	
 	@Getter
-	private ArrayList<String> smark;
+	private Integer id[][];
+	
+	@Autowired
+    private MarkService markService;
+	
 
 	/**
 	 * メモデータ1件分からデータ抽出してメンバー変数へ格納
@@ -44,6 +53,7 @@ public class DocumentParser {
 		Pattern urlPattern = this.getYoutubePattern();
 
 		int i = 0;
+		int k = 0;
 		for (String line: contents){
 			Matcher matcherHead = headPattern.matcher(line);
 			Matcher matcherYouTubeID = urlPattern.matcher(line);
@@ -59,7 +69,7 @@ public class DocumentParser {
 			//URLパターンにマッチした場合
 			if(matcherYouTubeID.matches()){
 				//YouTubeID 3パターンのいずれかを取り込む
-				for(int j = 1; j < 4; j++){
+				for(int j = 0; j < 3; j++){
 					if(Objects.nonNull(matcherYouTubeID.group(j))){
 						fho.setYoutubeId(matcherYouTubeID.group(j));
 						break;
@@ -98,18 +108,25 @@ public class DocumentParser {
 					//タイトルを格納
 					fho.setTitle(content.toString().strip());
 					isTitleInserted = true;
+					
 				}else{
+					
 					List<String> lineparts = this.createStream(content.toString().strip());
 					Stream stream = new Stream();
 					
-					//streamMarkに格納するためのマークをset
-					smark.add(lineparts.get(0));
+					List<String> emojis = new ArrayList<>();
+					emojis = DocumentEmojiExtractor.extractEmojis(lineparts.get(0));	//全文から絵文字のみ抽出
+					
+					for(int j = 0; j<emojis.size();j++) {
+							id[k][j]=markService.markToId(emojis.get(j)); //絵文字IDをListに格納
+					}
 					
 					stream.setTime(lineparts.get(1));
 					stream.setDescription(lineparts.get(2));
 					stream.setIsDelete(0);
 					//stream_infoに格納するデータset
 					streams.add(stream);
+					k++;
 				}
 				content.delete(0, content.length());
 			}else if(!matcherYouTubeID.matches()){
@@ -126,7 +143,7 @@ public class DocumentParser {
 	public void clear(){
 		fho = new Fho();
 		streams = new ArrayList<Stream>();
-		smark = new ArrayList<String>();
+		id = new Integer[1000][1000];
 	}
 
 	private List<String> createStream(String line){
@@ -137,8 +154,7 @@ public class DocumentParser {
 		
 		//（時間の前にマークがあってもOK）内容の行とマッチした場合
 		if(matcherStream.matches()){
-			//マークの格納（時間の前にあるマーク）
-			lineparts.add(matcherStream.group(1));
+			lineparts.add(matcherStream.group(0));	//全文格納
 			String timeString = matcherStream.group(2);
 			time.replace(time.length() - timeString.length(), time.length(), timeString);
 		}else{
@@ -161,7 +177,7 @@ public class DocumentParser {
 	}
 
 	/**
-	 * 1:17:36～結構首都覚えましたか？ アフリカばっかで… 
+	 * 1:17:36～結構首都覚えましたか？ アフリカばっかで…
 	 * のようなパターンの検出
 	 * @return Pattern
 	 */

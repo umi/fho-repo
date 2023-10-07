@@ -20,6 +20,6 @@ public class Mark {
     private String mark;
 
     @Column(nullable = false)
-    private String markDescription;
+    private String markDescription = "";
 
 }
