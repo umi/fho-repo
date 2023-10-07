@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,6 +37,9 @@ public class ImportController {
 
     @Autowired
     private PlatformTransactionManager txManager;
+    
+	@Autowired
+	DocumentParser parser = new DocumentParser();
 
 	@GetMapping("/insert")
 	public String insert(Model model) {
@@ -64,10 +66,8 @@ public class ImportController {
 	private List<String> insertFho(List<String> contents) {
 		List<String> data = new ArrayList<>();
 		int markId = 0;
-		int j = 0;
+		int i = 0;
 
-		//
-		DocumentParser parser = new DocumentParser();
 		parser.parse(contents);
 
 		try{
@@ -79,7 +79,7 @@ public class ImportController {
 
 			Fho fho = parser.getFho();
 			List<Stream> list = parser.getStreams();
-			List<String> smark = parser.getSmark();
+
 			
 			//fho_infoにデータINSERT
 			fhoService.setData(fho);
@@ -90,15 +90,18 @@ public class ImportController {
 			for(Stream stream: list){
 				streamService.setData(stream, fhoId);
 				int streamId = streamService.lastInsertId();
-				if(!smark.get(j).isEmpty()){
-					Optional<Integer> a = markRepository.idFindByMark(smark.get(j));
-					markId = a.orElse(0) ;
+				Integer id[][] = parser.getId();
+				
+				//stream_markテーブルに紐づけを格納
+				for(Integer markIdInteger: id[i]) {
+					markId = markIdInteger == null ? 0: markIdInteger;
+					if(markId > 0) {
+						StreamMarkService.setData(streamId, markId);
+					}
 				}
-				if(markId > 0) {
-					StreamMarkService.setData(streamId, markId);
-				}
+				
 				markId = 0;
-				j++;
+				i++;
 				data.add(stream.getTime() + " | " + stream.getDescription());
 			}
 			
