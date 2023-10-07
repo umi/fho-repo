@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +25,7 @@ public class Fho {
     private String title;
 
     @Column(nullable = true)
-    private String streamStart;
+    private LocalDateTime streamStart;
     
     @Column(nullable = true)
     private int total;

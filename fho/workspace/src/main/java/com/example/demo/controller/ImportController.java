@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.entity.Fho;
 import com.example.demo.entity.Stream;
@@ -42,7 +44,7 @@ public class ImportController {
 	DocumentParser parser = new DocumentParser();
 
 	@GetMapping("/insert")
-	public String insert(Model model) {
+	public String insert(@RequestParam String year, Model model) {
 		DocumentDivider documentDivider = new DocumentDivider();
 		documentDivider.setPath("src/main/resources/upload/sample.txt");
 
@@ -51,7 +53,7 @@ public class ImportController {
 		int i = 0;
 		while(documentDivider.hasNext()){
 			List<String> contents = documentDivider.next();
-			data.addAll(this.insertFho(contents));
+			data.addAll(this.insertFho(contents, year));
 			data.add("=========================================================");
 			if(i > 1000){
 				break;
@@ -63,12 +65,17 @@ public class ImportController {
 		return "read/index"; // or wherever you want to redirect after saving
 	}
 
-	private List<String> insertFho(List<String> contents) {
+	private List<String> insertFho(List<String> contents, String year) {
 		List<String> data = new ArrayList<>();
 		int markId = 0;
 		int i = 0;
 
-		parser.parse(contents);
+		try {
+			parser.parse(contents, year);
+		} catch (ParseException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
 
 		try{
 			DefaultTransactionDefinition def = new DefaultTransactionDefinition();

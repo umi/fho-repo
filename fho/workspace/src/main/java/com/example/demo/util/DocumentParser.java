@@ -1,6 +1,12 @@
 package com.example.demo.util;
 
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -38,8 +44,9 @@ public class DocumentParser {
 	 * メモデータ1件分からデータ抽出してメンバー変数へ格納
 	 * @param List<String> contents
 	 * @return void
+	 * @throws ParseException 
 	 */
-	public void parse(List<String> contents) {
+	public void parse(List<String> contents, String year) throws ParseException {
 		this.clear();
 		StringBuilder content = new StringBuilder(256);
 		StringBuilder streamStart = new StringBuilder(256);
@@ -80,7 +87,8 @@ public class DocumentParser {
 				if(!isTitleInserted && matcherHead.matches()){
 					// fho_infoの開始日時
 					streamStart.delete(0, streamStart.length());
-					streamStart.append(matcherHead.group(1));
+					streamStart.append(year);
+					streamStart.append(" ").append(matcherHead.group(1));
 					if (Objects.nonNull(matcherHead.group(4))) {
 						streamStart.append(" ").append(matcherHead.group(4));
 					}
@@ -92,7 +100,12 @@ public class DocumentParser {
 					if(Objects.nonNull(matcherHead.group(5))){
 						content.append(matcherHead.group(5).strip());
 					}
-					fho.setStreamStart(streamStart.toString());
+					
+					String datetimeString = streamStart.toString();
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy M/d HH:mm"); // パターンを "yyyy M/d HH:mm" に変更
+					LocalDateTime datetime = LocalDateTime.parse(datetimeString, formatter);
+					
+					fho.setStreamStart(datetime);
 					fho.setTotal(TimeToSecondsConverter.convertToSeconds(matcherHead.group(2)));
 					fho.setIsMember(0);
 					fho.setIsDelete(0);
@@ -121,7 +134,18 @@ public class DocumentParser {
 							id[k][j]=markService.markToId(emojis.get(j)); //絵文字IDをListに格納
 					}
 					
-					stream.setTime(lineparts.get(1));
+					String timeString = lineparts.get(1);
+					SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+					Date date = null;
+					try {
+						date = format.parse(timeString);
+					} catch (ParseException e) {
+						// TODO 自動生成された catch ブロック
+						e.printStackTrace();
+					}
+					Time time = new Time(date.getTime());
+					
+					stream.setTime(time);
 					stream.setDescription(lineparts.get(2));
 					stream.setIsDelete(0);
 					//stream_infoに格納するデータset

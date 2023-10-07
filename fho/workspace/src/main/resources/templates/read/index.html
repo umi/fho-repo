@@ -6,7 +6,17 @@
 <body>
 
 <button onclick="location.href='/readFile'">ファイル読み取り</button>
-<button onclick="location.href='/insert'">ファイル取り込み</button>
+
+<form id="form1" th:action="@{/insert}" method="get">
+	<select name="year">
+		<option value="00"></option>
+		<option value="2023">2023</option>
+		<option value="2022">2022</option>
+		<option value="2021">2021</option>
+	</select>
+	<p><input id="sbtn1" type="submit" value="ファイル取り込み" /></p></form>
+
+
 <button onclick="location.href='/'">戻る</button>
 
 <ul>
