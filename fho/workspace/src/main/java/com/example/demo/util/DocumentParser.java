@@ -53,13 +53,11 @@ public class DocumentParser {
 		boolean isTitleInserted = false;
 
 		// 日付 タイトル 時間
-		Pattern headPattern = this.getHeadLinePattern();
-		
-		
+		Pattern headPattern = DocumentParser.getHeadLinePattern();
 		// stream line
-		Pattern streamPattern = this.getStreamLinePattern();
+		Pattern streamPattern = DocumentParser.getStreamLinePattern();
 		// url
-		Pattern urlPattern = this.getYoutubePattern();
+		Pattern urlPattern = DocumentParser.getYoutubePattern();
 
 		int i = 0;
 		int k = 0;
@@ -179,7 +177,7 @@ public class DocumentParser {
 	private List<String> createStream(String line){
 		List<String> lineparts = new ArrayList<>();
 		StringBuilder time = new StringBuilder("00:00:00");
-		Pattern streamPattern = this.getStreamLinePattern();
+		Pattern streamPattern = DocumentParser.getStreamLinePattern();
 		Matcher matcherStream = streamPattern.matcher(line);
 		
 		//（時間の前にマークがあってもOK）内容の行とマッチした場合
