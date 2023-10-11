@@ -10,7 +10,7 @@ import com.example.demo.dto.SearchResultDTO;
 import com.example.demo.entity.Stream;
 
 public interface SearchRepository extends JpaRepository<Stream, Integer> {
-    @Query("SELECT new com.example.demo.dto.SearchResultDTO(d.id,  f.title, d.time, d.description, f.streamStart, m.mark) "
+    @Query("SELECT Distinct new com.example.demo.dto.SearchResultDTO(d.id,  f.title, d.time, d.description, f.streamStart, m.mark) "
     		+ "FROM Stream d LEFT JOIN Fho f ON d.id = f.id "
     		+ "LEFT JOIN StreamMark sm ON d.streamId = sm.streamId "
     		+ "LEFT JOIN Mark m ON sm.markId = m.markId "
