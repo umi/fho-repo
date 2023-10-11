@@ -24,6 +24,20 @@
 
 <button onclick="location.href='/'">戻る</button>
 
+<div class="pagination" th:if="${totalPages > 0}">
+    <ul>
+        <li th:if="${hasPreviousPage}">
+            <a th:href="@{/search(sbox1=${title},sbox2=${description},mark=${selectedValue},page=${currentPage - 1},size=${size})}">前のページ</a>
+        </li>
+        <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:href="@{/search(sbox1=${title}, sbox2=${description}, mark=${selectedValue}, page=${pageNumber}, size=${size})}" th:text="${pageNumber + 1}"></a>
+        </li>
+        <li th:if="${hasNextPage}">
+            <a th:href="@{/search(sbox1=${title},sbox2=${description},mark=${selectedValue},page=${currentPage + 1},size=${size})}">次のページ</a>
+        </li>
+    </ul>
+</div>
+
     <table border=1>
         <thead>
             <tr>
