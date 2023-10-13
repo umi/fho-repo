@@ -46,7 +46,6 @@ public class MarkService {
 		
 		Integer id = 0;
 		
-		
 		if(!Marks.containsKey(mark)) {
 			
 			Mark imark = new Mark();

@@ -16,9 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.TimeToSecondsConverter;
+import com.example.demo.entity.Battle;
 import com.example.demo.entity.Fho;
 import com.example.demo.entity.Stream;
+import com.example.demo.service.CreativeService;
 import com.example.demo.service.MarkService;
+import com.example.demo.service.UserService;
 
 import lombok.Getter;
 
@@ -34,12 +37,21 @@ public class DocumentParser {
 	private ArrayList<Stream> streams;
 	
 	@Getter
-	private Integer id[][];
+	private ArrayList<Battle> battles;
+	
+	@Getter
+	private Integer markId[][];
 
 	private String lastDate = "1/1";
 	
 	@Autowired
     private MarkService markService;
+	
+	@Autowired
+    private CreativeService creativeService;
+	
+	@Autowired
+    private UserService userService;
 	
 
 	/**
@@ -60,6 +72,8 @@ public class DocumentParser {
 		Pattern streamPattern = DocumentParser.getStreamLinePattern();
 		// url
 		Pattern urlPattern = DocumentParser.getYoutubePattern();
+		//1v1
+		Pattern battlePattern = DocumentParser.getBattlePattern();
 
 		int i = 0;
 		int k = 0;
@@ -150,7 +164,7 @@ public class DocumentParser {
 					emojis = DocumentEmojiExtractor.extractEmojis(lineparts.get(0));	//全文から絵文字のみ抽出
 					
 					for(int j = 0; j<emojis.size();j++) {
-							id[k][j]=markService.markToId(emojis.get(j)); //絵文字IDをListに格納
+						markId[k][j]=markService.markToId(emojis.get(j)); //絵文字IDをListに格納
 					}
 					
 					String timeString = lineparts.get(1);
@@ -169,6 +183,29 @@ public class DocumentParser {
 					stream.setIsDelete(0);
 					//stream_infoに格納するデータset
 					streams.add(stream);
+					
+					//1v1テーブルデータ抽出
+					Matcher matcherBattle = battlePattern.matcher(lineparts.get(2));
+					Battle battle = new Battle();
+					if(matcherBattle.matches()) {
+						battle.setId(0);
+						battle.setCreativeId(creativeService.creativeNameToId(matcherBattle.group(1))); //対戦場所
+						battle.setOpponentId(userService.userAbbreviationToId(matcherBattle.group(3))); //対戦相手
+						battle.setWin(Integer.parseInt(matcherBattle.group(2))); //勝ち回数
+						battle.setLose(Integer.parseInt(matcherBattle.group(4))); //負け回数
+						
+						battles.add(battle);
+					}else {
+						//1v1ではない配信情報の場合すべて0をセット
+						battle.setId(0);
+						battle.setCreativeId(0); //対戦場所
+						battle.setOpponentId(0); //対戦相手
+						battle.setWin(0); //勝ち回数
+						battle.setLose(0); //負け回数
+						
+						battles.add(battle);
+					}
+					
 					k++;
 				}
 				content.delete(0, content.length());
@@ -186,7 +223,8 @@ public class DocumentParser {
 	public void clear(){
 		fho = new Fho();
 		streams = new ArrayList<Stream>();
-		id = new Integer[1000][1000];
+		battles =new ArrayList<Battle>();
+		markId = new Integer[1000][1000];
 	}
 
 	private List<String> createStream(String line){
@@ -237,6 +275,15 @@ public class DocumentParser {
 	 */
 	public static Pattern getYoutubePattern() {
 		return Pattern.compile("^\\s*https://(?:www\\.youtube\\.com/(?:live/([^?]+)|watch\\?v=([^&]+)).*|youtu\\.be/(.+))");
+	}
+	
+	/**
+	 * 軽すぎて風になっちゃうボックスファイト ※(姫4 対 へ6)  ※(10回) (計10 残り490)
+	 * のようなパターンから①対戦場所と③対戦相手、②④勝敗回数を抽出
+	 * @return Pattern
+	 */
+	public static Pattern getBattlePattern() {
+		return Pattern.compile("^(.*)※\\(姫(\\d{1,2})\\s対\\s(.+?)(\\d{1,2})\\).*");
 	}
 
 }

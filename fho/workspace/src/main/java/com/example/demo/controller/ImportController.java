@@ -14,9 +14,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.demo.entity.Battle;
 import com.example.demo.entity.Fho;
 import com.example.demo.entity.Stream;
 import com.example.demo.repository.MarkRepository;
+import com.example.demo.service.BattleService;
 import com.example.demo.service.FhoService;
 import com.example.demo.service.StreamMarkService;
 import com.example.demo.service.StreamService;
@@ -32,7 +34,10 @@ public class ImportController {
     private StreamService streamService;
 	
 	@Autowired
-    private StreamMarkService StreamMarkService;
+    private StreamMarkService streamMarkService;
+	
+	@Autowired
+    private BattleService battleService;
 	
 	@Autowired
 	private MarkRepository markRepository;
@@ -85,6 +90,7 @@ public class ImportController {
 			TransactionStatus status = txManager.getTransaction(def);
 
 			Fho fho = parser.getFho();
+			List<Battle> battles = parser.getBattles();
 			List<Stream> list = parser.getStreams();
 
 			
@@ -93,24 +99,33 @@ public class ImportController {
 			int fhoId = fhoService.lastInsertId();
 			data.add(fhoId + " | " + fho.getStreamStart() + " | " + fho.getTitle() + " | " + fho.getYoutubeId());
 			
-			//stream_infoにデータを挿入
 			for(Stream stream: list){
+				//stream_infoにデータを挿入
 				streamService.setData(stream, fhoId);
 				int streamId = streamService.lastInsertId();
-				Integer id[][] = parser.getId();
+				Integer id[][] = parser.getMarkId();
 				
 				//stream_markテーブルに紐づけを格納
 				for(Integer markIdInteger: id[i]) {
 					markId = markIdInteger == null ? 0: markIdInteger;
 					if(markId > 0) {
-						StreamMarkService.setData(streamId, markId);
+						streamMarkService.setData(streamId, markId);
 					}
 				}
 				
+				//1v1テーブルに対戦記録を格納
+				Battle battle = battles.get(i);
+				if(battle.getCreativeId() > 0 && battle.getOpponentId() > 0) {
+					battle.setId(streamId);
+					battleService.setData(battle);
+				}
+				
 				markId = 0;
-				i++;
+				i++; //取り込み行のインクリメント 開始は0
 				data.add(stream.getTime() + " | " + stream.getDescription());
 			}
+			
+			
 			
 			txManager.commit(status);
 		}catch(Exception e){
