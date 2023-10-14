@@ -9,24 +9,16 @@
     <table border=1>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>youtubeURL</th>
-                <th>タイトル</th>
-                <th>配信開始日時</th>
-                <th>総配信時間[秒]</th>
-                <th>メンバーフラグ</th>
-                <th>削除フラグ</th>
+                <th>対戦相手</th>
+                <th>対戦回数（回）</th>
+                <th>勝率（％）</th>
             </tr>
         </thead>
         <tbody>
-			<tr th:each="line : ${fho}" th:object="${fho}">
-				<td><a th:href="|/stream/${line.id}|">[[${line.id}]]</a></td>
-                <td>[[${line.youtubeId}]]</td>
-                <td><a th:href="|/stream/${line.id}|">[[${line.title}]]</a></td>
-                <td>[[${line.streamStart}]]</td>
-                <td>[[${line.total}]]</td>
-                <td>[[${line.isMember}]]</td>
-                <td>[[${line.isDelete}]]</td>
+			<tr th:each="line : ${calc}">
+				<td>[[${line.name}]]</td>
+                <td>[[${line.sum}]]</td>
+                <td>[[${line.winRate}]]</td>
             </tr>
         </tbody>
     </table>
