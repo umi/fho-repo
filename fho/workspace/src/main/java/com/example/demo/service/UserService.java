@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,10 @@ public class UserService {
         return userRepository.findAll();
 	}
 	
+	public Optional<User> findById(Integer id) {
+    	return userRepository.findById(id);
+	}
+	
 	public void setUser() {
 		 List<User> list = this.getUser();
 		 User.clear();
@@ -39,6 +44,14 @@ public class UserService {
 	}
 	
 	public void setData(User user) {
+		userRepository.save(user);
+	}
+	
+	public void updateData(int id, String userName, String userAbbreviation) {
+		User user = new User();
+		user.setId(id);
+		user.setUserName(userName);
+		user.setUserAbbreviation(userAbbreviation);
 		userRepository.save(user);
 	}
 	

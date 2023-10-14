@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search</title>
+    <meta charset="UTF-8" />
+    <link th:href="@{/css/content.css}" rel="stylesheet">
+</head>
+<body>
+
+<h1>ユーザマスタ</h1>
+<button onclick="location.href='/master/user'">戻る</button>
+<form id="form1" th:action="@{/userInsert}" method="get">
+	<table border=1>
+        <thead>
+            <tr>
+                <th>ユーザID</th>
+                <th>ユーザ名</th>
+                <th>略称</th>
+            </tr>
+        </thead>
+        <tbody>
+		    <tr th:each="line : ${user}" th:object="${user}">
+		        <td><input type="hidden" th:value="${line.id}" name="id">[[${line.id}]]</td>
+		        <td><input type="text" th:value="${line.userName}" name="userName"></td>
+		        <td><input type="text" th:value="${line.userAbbreviation}" name="userAbbreviation"></td>
+		    </tr>
+		</tbody>
+
+    </table>
+<p><input id="sbtn1" type="submit" value="更新" /></p></form>
+
+
+
+</body>
+</html>

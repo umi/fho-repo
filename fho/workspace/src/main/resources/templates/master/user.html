@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search</title>
+    <meta charset="UTF-8" />
+    <link th:href="@{/css/content.css}" rel="stylesheet">
+</head>
+<body>
+
+<h1>ユーザマスタ</h1>
+
+<button onclick="location.href='/master'">戻る</button>
+	<table border=1>
+        <thead>
+            <tr>
+				<th></th>
+                <th>ユーザID</th>
+                <th>ユーザ名</th>
+                <th>略称</th>
+            </tr>
+        </thead>
+        <tbody>
+			<tr th:each="line : ${user}" th:object="${user}">
+				<td><a th:href="|/userEdit/${line.id}|">編集</a></td>
+				<td>[[${line.id}]]</td>
+                <td>[[${line.userName}]]</td>
+                <td>[[${line.userAbbreviation}]]</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

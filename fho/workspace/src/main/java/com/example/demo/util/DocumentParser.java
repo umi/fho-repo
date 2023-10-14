@@ -188,11 +188,16 @@ public class DocumentParser {
 					Matcher matcherBattle = battlePattern.matcher(lineparts.get(2));
 					Battle battle = new Battle();
 					if(matcherBattle.matches()) {
+						
+						int win = Integer.parseInt(matcherBattle.group(2));
+						int lose = Integer.parseInt(matcherBattle.group(4));
+						
 						battle.setId(0);
 						battle.setCreativeId(creativeService.creativeNameToId(matcherBattle.group(1))); //対戦場所
 						battle.setOpponentId(userService.userAbbreviationToId(matcherBattle.group(3))); //対戦相手
-						battle.setWin(Integer.parseInt(matcherBattle.group(2))); //勝ち回数
-						battle.setLose(Integer.parseInt(matcherBattle.group(4))); //負け回数
+						battle.setWin(win); //勝ち回数
+						battle.setLose(lose); //負け回数
+						battle.setSum(win + lose); //合計
 						
 						battles.add(battle);
 					}else {
