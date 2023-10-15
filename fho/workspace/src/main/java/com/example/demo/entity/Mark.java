@@ -14,7 +14,7 @@ import lombok.Data;
 public class Mark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int markId;
+    private int id;
 
     @Column(nullable = false)
     private String mark;

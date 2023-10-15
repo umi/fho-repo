@@ -11,7 +11,7 @@ import com.example.demo.entity.Stream;
 
 @Repository
 public interface StreamRepository extends JpaRepository<Stream, Integer> {
-	@Query("SELECT d FROM Stream d WHERE d.id = ?1")
+	@Query("SELECT d FROM Stream d WHERE d.fhoId = ?1")
 	public List<Stream> findByIdCustom(int id);
 	
 	@Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)

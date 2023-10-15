@@ -68,7 +68,7 @@ public class MarkService {
 		 Marks.clear();
 		 
 		 for(Mark mark: list) {
-			 Marks.put(mark.getMark(), mark.getMarkId());
+			 Marks.put(mark.getMark(), mark.getId());
 		 }
 		
 	}

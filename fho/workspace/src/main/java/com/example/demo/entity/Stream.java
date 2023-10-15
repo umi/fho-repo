@@ -16,10 +16,10 @@ import lombok.Data;
 public class Stream {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int streamId;
+    private int id;
 
     @Column(nullable = false)
-    private int id;
+    private int fhoId;
 
     @Column(nullable = false)
     private Time time;
