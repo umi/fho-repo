@@ -1,0 +1,23 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <link th:href="@{/css/content.css}" rel="stylesheet">
+</head>
+<body>
+	<button onclick="location.href='/calculate'">戻る</button>
+    <table border=1>
+        <thead>
+            <tr>
+                <th>配信回数</th>
+                <th>総配信時間</th>
+            </tr>
+        </thead>
+        <tbody>
+				<td>[[${count}]]</td>
+                <td>[[${tTime}]]</td>
+        </tbody>
+    </table>
+
+</body>
+</html>

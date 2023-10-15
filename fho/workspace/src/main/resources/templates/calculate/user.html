@@ -1,0 +1,27 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <link th:href="@{/css/content.css}" rel="stylesheet">
+</head>
+<body>
+	<button onclick="location.href='/calculate'">戻る</button>
+    <table border=1>
+        <thead>
+            <tr>
+                <th>対戦相手</th>
+                <th>対戦回数（回）</th>
+                <th>勝率（％）</th>
+            </tr>
+        </thead>
+        <tbody>
+			<tr th:each="line : ${calc}">
+				<td>[[${line.name}]]</td>
+                <td>[[${line.sum}]]</td>
+                <td>[[${line.winRate}]]</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
