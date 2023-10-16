@@ -18,6 +18,23 @@
                 <td>[[${tTime}]]</td>
         </tbody>
     </table>
+    
+        <table border=1>
+	        <thead>
+	            <tr>
+	                <th>月</th>
+	                <th>配信回数</th>
+	                <th>配信時間</th>
+	            </tr>
+	        </thead>
+		    <tbody>
+		        <tr th:each="i : ${#numbers.sequence(0, 11)}"> <!-- 0から11までのインデックスでループ -->
+		            <td th:text="${'2023年'+(i + 1)+'月'}"></td> <!-- 月の表示（1から12まで） -->
+		            <td th:text="${mcount[i]}"></td> <!-- mcountの該当月の値を表示 -->
+		            <td th:text="${mTime[i]}"></td> <!-- mtotalTimeの該当月の値を表示 -->
+		        </tr>
+		    </tbody>
+    	</table>
 
 </body>
 </html>
