@@ -10,7 +10,7 @@ import com.example.demo.entity.Mark;
 
 @Repository
 public interface MarkRepository extends JpaRepository<Mark, Integer>{
-	@Query("select m.markId from Mark m where m.mark = ?1")
+	@Query("SELECT m.id FROM Mark m WHERE m.mark = ?1")
 	Optional<Integer> idFindByMark(String mark);
 	
 	public List<Mark> findAll();

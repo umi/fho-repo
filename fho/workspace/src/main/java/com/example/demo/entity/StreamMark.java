@@ -15,7 +15,7 @@ public class StreamMark {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int streamMarkId;
+    private int id;
 	
     @Column(nullable = false)
     private int streamId;
