@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class SearchController {
 	
 	@Autowired
 	private MarkService markService;
+	
+	private int sec[] = new int[10000];
 
 	@GetMapping("/search")
 	public String searchStream(
@@ -33,27 +36,37 @@ public class SearchController {
 		    @RequestParam(defaultValue = "100") int size, 
 		    Model model)  {
 		
-		Page<SearchResultDTO> data;
+		Page<SearchResultDTO> datum;
+		int i = 0;
 
 		int intmarkId = (markId != null) ? markId : 0;
 		if(intmarkId == 0) {
-			data = searchService.searchByOnlyKeyword(description, title, PageRequest.of(page, size));
+			datum = searchService.searchByOnlyKeyword(description, title, PageRequest.of(page, size));
 		}else {
-			data = searchService.searchByKeyword(description, title, intmarkId, PageRequest.of(page, size));
+			datum = searchService.searchByKeyword(description, title, intmarkId, PageRequest.of(page, size));
 		}
 		
 		List<Mark> mark = markService.getMark();
 		
-		model.addAttribute("content", data);
+		for(SearchResultDTO data:datum) {
+			LocalTime localTime = data.getTime().toLocalTime();
+			sec[i] = localTime.toSecondOfDay();
+			i++;
+		}
+
+		
+		
+		model.addAttribute("content", datum);
+		model.addAttribute("sec", sec);
 		model.addAttribute("description", description);
 		model.addAttribute("title", title);
 		model.addAttribute("mark", mark);
 		model.addAttribute("selectedValue", markId);
 		
 		model.addAttribute("currentPage", page);
-		model.addAttribute("totalPages", data.getTotalPages());
-		model.addAttribute("hasNextPage", data.hasNext());
-		model.addAttribute("hasPreviousPage", data.hasPrevious());
+		model.addAttribute("totalPages", datum.getTotalPages());
+		model.addAttribute("hasNextPage", datum.hasNext());
+		model.addAttribute("hasPreviousPage", datum.hasPrevious());
 
 		
 		return "search/index"; // or wherever you want to redirect after saving
