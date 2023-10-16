@@ -14,13 +14,15 @@ public class SearchResultDTO {
     private Time time;
     private String description;
     private String mark;
+    private String youtubeId;
 
-    public SearchResultDTO(int id,  String title, Time time ,String description, LocalDateTime streamStart, String mark) {
+    public SearchResultDTO(int id,  String title, Time time ,String description, LocalDateTime streamStart, String mark, String youtubeId) {
         this.id = id;
         this.streamStart = streamStart;
         this.title = title;
         this.time = time;
         this.description = description;
         this.mark = mark;
+        this.youtubeId = youtubeId;
     }
 }

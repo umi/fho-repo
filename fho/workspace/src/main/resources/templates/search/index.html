@@ -53,7 +53,7 @@
                 <td th:text="*{title}"></td>
                 <td th:text="*{streamStart}"></td>
                 <td th:text="*{time}"></td>
-                <td th:text="*{description}"></td>
+                <td><a th:href="${'https://www.youtube.com/live/'+result.youtubeId+'/&t='+result.time}">[[${result.description}]]</a></td>
                 <td th:text="*{mark}"></td>
             </tr>
         </tbody>

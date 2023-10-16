@@ -10,7 +10,7 @@ import com.example.demo.dto.SearchResultDTO;
 import com.example.demo.entity.Stream;
 
 public interface SearchRepository extends JpaRepository<Stream, Integer> {
-    @Query("SELECT Distinct new com.example.demo.dto.SearchResultDTO(f.id,  f.title, d.time, d.description, f.streamStart, m.mark) "
+    @Query("SELECT Distinct new com.example.demo.dto.SearchResultDTO(f.id,  f.title, d.time, d.description, f.streamStart, m.mark, f.youtubeId) "
     		+ "FROM Stream d LEFT JOIN Fho f ON d.fhoId = f.id "
     		+ "LEFT JOIN StreamMark sm ON d.id = sm.streamId "
     		+ "LEFT JOIN Mark m ON sm.markId = m.id "
@@ -18,7 +18,7 @@ public interface SearchRepository extends JpaRepository<Stream, Integer> {
     		+ "ORDER BY f.streamStart DESC")
     public Page<SearchResultDTO> searchStream(@Param("description") String description, @Param("title") String title,  @Param("markId") int markId, PageRequest pageable);
     
-    @Query("SELECT new com.example.demo.dto.SearchResultDTO(f.id,  f.title, d.time, d.description, f.streamStart, m.mark) "
+    @Query("SELECT new com.example.demo.dto.SearchResultDTO(f.id,  f.title, d.time, d.description, f.streamStart, m.mark, f.youtubeId) "
     		+ "FROM Stream d LEFT JOIN Fho f ON d.fhoId = f.id "
     		+ "LEFT JOIN StreamMark sm ON d.id = sm.streamId "
     		+ "LEFT JOIN Mark m ON sm.markId = m.id "
