@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class SearchResultDTO {
     private int id;
+    private int fhoId;
     private LocalDateTime streamStart;
     private String title;
     private Time time;
@@ -16,8 +17,9 @@ public class SearchResultDTO {
     private String mark;
     private String youtubeId;
 
-    public SearchResultDTO(int id,  String title, Time time ,String description, LocalDateTime streamStart, String mark, String youtubeId) {
+    public SearchResultDTO(int id, int fhoId, String title, Time time ,String description, LocalDateTime streamStart, String mark, String youtubeId) {
         this.id = id;
+        this.fhoId = fhoId;
         this.streamStart = streamStart;
         this.title = title;
         this.time = time;
