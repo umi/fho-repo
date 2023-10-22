@@ -51,12 +51,13 @@ public class CalculateController {
 		 List<Fho> fhoes = fhoService.getFho();
 		 
 		 int totalTime = 0;
-		 int mtotalTime[] = new int[12];
-		 int mcount[] = new int[12];
+		 int mtotalTime[] = new int[128];
+		 int mcount[] = new int[128];
 		 int count = 0;
+		 int j = 0;
 		 
 		 String tTime;
-		 String mTime[] = new String[12];
+		 String mTime[] = new String[128];
 		 
 		 for(Fho fho: fhoes) {
 			 totalTime += fho.getTotal();
@@ -64,24 +65,34 @@ public class CalculateController {
 		 }
 		 tTime = SecondsToTimeConverter.convertToTime(totalTime);
 		 
-		 // 現在の年を取得
-		 int currentYear = LocalDateTime.now().getYear();
+		// 現在の年を取得
+		 int Year;
 		 
-		 for(Fho fho: fhoes) {
-			 for(int i = 0; i < 12; i++) {
-		            LocalDateTime startOfMonth = LocalDateTime.of(currentYear, i + 1, 1, 0, 0); // i+1 で1月から12月を表現
-		            LocalDateTime endOfMonth = startOfMonth.plusMonths(1); // 次の月の1日の0時
-
-		            if(fho.getStreamStart().isAfter(startOfMonth) && fho.getStreamStart().isBefore(endOfMonth)) {
-		                mtotalTime[i] += fho.getTotal();
-		                mcount[i]++;
-		            }
-		        }
-			 
-		 }
-		 for(int i = 0; i < 12; i++) {
-			 mTime[i] = SecondsToTimeConverter.convertToTime(mtotalTime[i]);
-		 }
+		 
+			 for(Fho fho: fhoes) {
+				
+				 Year = LocalDateTime.now().getYear();
+				 j = 0;
+				 
+				while(Year >= 2021) {
+					 for(int i = 0; i < 12; i++) {
+				            LocalDateTime startOfMonth = LocalDateTime.of(Year, i + 1, 1, 0, 0); // i+1 で1月から12月を表現
+				            LocalDateTime endOfMonth = startOfMonth.plusMonths(1); // 次の月の1日の0時
+	
+				            if(fho.getStreamStart().isAfter(startOfMonth) && fho.getStreamStart().isBefore(endOfMonth)) {
+				                mtotalTime[i+12*j] += fho.getTotal();
+				                mcount[i+12*j]++;
+				            }
+				      }
+					 j++;
+					 Year--;
+				 }
+			 }
+			 for(int i = 0; i < 36; i++) {
+				 mTime[i] = SecondsToTimeConverter.convertToTime(mtotalTime[i]);
+			 }
+		 
+		
 		 
 	        model.addAttribute("tTime", tTime);
 	        model.addAttribute("count", count);
