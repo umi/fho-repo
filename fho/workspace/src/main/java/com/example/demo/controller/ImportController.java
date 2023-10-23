@@ -67,6 +67,8 @@ public class ImportController {
 		}
 
 		model.addAttribute("content", data);
+		model.addAttribute("year", year);
+		
 		return "read/index"; // or wherever you want to redirect after saving
 	}
 
