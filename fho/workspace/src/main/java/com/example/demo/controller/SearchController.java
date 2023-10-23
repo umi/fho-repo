@@ -40,7 +40,7 @@ public class SearchController {
 			@RequestParam(name="sbox2", required=false) String description, 
 			@RequestParam(name="mark", required=false) Integer markId, 
 			@RequestParam(name="user", required=false) Integer userId, 
-			@RequestParam(name="strattime", required=false) LocalDate starttime, 
+			@RequestParam(name="starttime", required=false) LocalDate starttime, 
 			@RequestParam(name="endtime", required=false) LocalDate endtime, 
 			@RequestParam(defaultValue = "0") int page,
 		    @RequestParam(defaultValue = "100") int size, 
@@ -93,7 +93,7 @@ public class SearchController {
 		model.addAttribute("user", user);
 		model.addAttribute("selectedMarkValue", markId);
 		model.addAttribute("selectedUserValue", userId);
-		model.addAttribute("strattime", starttime);
+		model.addAttribute("starttime", starttime);
 		model.addAttribute("endtime", endtime);
 		
 		model.addAttribute("currentPage", page);
