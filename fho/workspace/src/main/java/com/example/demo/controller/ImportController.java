@@ -94,7 +94,13 @@ public class ImportController {
 			Fho fho = parser.getFho();
 			List<Battle> battles = parser.getBattles();
 			List<Stream> list = parser.getStreams();
-
+			List<Integer> youtubeIds = fhoService.getYouTubeToId(fho.getYoutubeId());
+			
+			if(youtubeIds != null && !youtubeIds.isEmpty()) {
+				for(int youtubeId : youtubeIds) {
+					fhoService.deleteData(youtubeId);
+				}
+			}
 			
 			//fho_infoにデータINSERT
 			fhoService.setData(fho);
