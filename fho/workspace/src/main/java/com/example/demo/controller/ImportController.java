@@ -96,6 +96,7 @@ public class ImportController {
 			List<Stream> list = parser.getStreams();
 			List<Integer> youtubeIds = fhoService.getYouTubeToId(fho.getYoutubeId());
 			
+			//fho_infoに存在するyoutubeIdが重複するデータを削除
 			if(youtubeIds != null && !youtubeIds.isEmpty()) {
 				for(int youtubeId : youtubeIds) {
 					fhoService.deleteData(youtubeId);

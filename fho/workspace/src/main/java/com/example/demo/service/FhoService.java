@@ -29,7 +29,7 @@ public class FhoService {
 		fhoRepository.deleteById(id);
 	}
 	
-	public List<Integer> getYouTubeToId(String youTubeId) {
-        return fhoRepository.findByYouTubeId(youTubeId);
+	public List<Integer> getYouTubeToId(String youtubeId) {
+        return fhoRepository.findByYouTubeId(youtubeId);
     }
 }
