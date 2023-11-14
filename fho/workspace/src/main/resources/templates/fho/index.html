@@ -6,7 +6,8 @@
 </head>
 <body>
 	<button onclick="location.href='/read'">ファイルの読み取り</button>
-    <button onclick="location.href='/search'">検索画面</button>
+	<button onclick="location.href='/upload'">配信情報新規登録</button>
+    <button onclick="location.href='/search'">配信詳細検索</button>
     <button onclick="location.href='/calculate'">情報集計</button>
     <button onclick="location.href='/master'">マスタメンテ</button>
     <table border=1>
@@ -17,8 +18,6 @@
                 <th>タイトル</th>
                 <th>配信開始日時</th>
                 <th>総配信時間[秒]</th>
-                <th>メンバーフラグ</th>
-                <th>削除フラグ</th>
             </tr>
         </thead>
         <tbody>
@@ -28,8 +27,6 @@
                 <td><a th:href="|/stream/${line.id}|">[[${line.title}]]</a></td>
                 <td>[[${line.streamStart}]]</td>
                 <td>[[${line.total}]]</td>
-                <td>[[${line.isMember}]]</td>
-                <td>[[${line.isDelete}]]</td>
             </tr>
         </tbody>
     </table>

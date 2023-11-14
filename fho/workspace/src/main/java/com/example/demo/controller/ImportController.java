@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.dto.DescriptionDTO;
 import com.example.demo.entity.Battle;
 import com.example.demo.entity.Fho;
 import com.example.demo.entity.Stream;
@@ -47,13 +51,25 @@ public class ImportController {
     
 	@Autowired
 	DocumentParser parser = new DocumentParser();
+	
+	String destinationPath;
 
-	@GetMapping("/insert")
-	public String insert(@RequestParam String year, Model model) {
+	@PostMapping("/insert")
+	public String insert(@RequestParam("file") MultipartFile file,@RequestParam String year, Model model) {
 		DocumentDivider documentDivider = new DocumentDivider();
-		documentDivider.setPath("src/main/resources/upload/sample.txt");
+		try {
+            // 例: ファイルをサーバー上の特定の場所に保存
+            destinationPath = "D:/Git/fho-repo/fho/workspace/src/main/resources/upload/" + file.getOriginalFilename();
+            file.transferTo(new File(destinationPath));
+            
+        } catch (Exception e) {
+            return "ファイルアップロード失敗: " + e.getMessage();
+        }
+		
+		documentDivider.setPath(destinationPath);
 
 		List<String> data = new ArrayList<>();
+		data.add(destinationPath);
 		data.add("=========================================================");
 		int i = 0;
 		while(documentDivider.hasNext()){
@@ -70,6 +86,23 @@ public class ImportController {
 		model.addAttribute("year", year);
 		
 		return "read/index"; // or wherever you want to redirect after saving
+	}
+	
+	@GetMapping("/upload")
+	public String upload(Model model) {
+		List<DescriptionDTO> descriptions = new ArrayList<>();
+		for(int i = 0; i < 100; i++) {
+			descriptions.add(new DescriptionDTO("",""));
+			}
+		
+		model.addAttribute("descriptions", descriptions);
+		
+		return "upload/index";
+	}
+	
+	@GetMapping("/uploadData")
+	public String uploadData(Model model) {
+		return "upload/index";
 	}
 
 	private List<String> insertFho(List<String> contents, String year) {

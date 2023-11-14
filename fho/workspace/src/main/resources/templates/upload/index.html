@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>配信情報編集</title>
+</head>
+<body>
+
+<form id="form1" th:action="@{/uploadData}" method="get">
+	
+<p>配信開始日時：<input th:value="${starttime}" type="date" name="starttime" required></p>
+<p>　タイトル　：<input id="sbox1" name="sbox1" type="text" th:value="${description}" placeholder="タイトル" required/></p>
+<p>YouTubeURL：<input id="sbox2" name="sbox2" type="text" th:value="${youtubeId}" placeholder="URL" required/></p>
+<p>配信合計時間：<input type="time"  step="1" id="time" name="time" required></p>
+
+    <table>
+        <tr>
+            <th>チェックポイント</th>
+            <th>詳細</th>
+        </tr>
+        <tr th:each="i : ${#numbers.sequence(1, 100)}">
+            <td><input type="time" step="1" name="chckpoint" /></td>
+            <td><input type="text" name="description" /></td>
+        </tr>
+    </table>
+
+    <input type="submit" value="送信"></form>
+
+<button onclick="location.href='/'">戻る</button>
+
+</body>
+</html>
