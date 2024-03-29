@@ -60,18 +60,19 @@ public class ImportController {
 		
 		// 基準となるディレクトリからの相対パスを指定
         String relativePath = "src/main/resources/upload/";
+        String projectRootPath = System.getProperty("user.dir");
         
         
 		try {
 			
 			// リソースを取得して相対パスを解決
 	        
-	        String destinationPath = relativePath + file.getOriginalFilename();
+	        String destinationPath = projectRootPath + relativePath + file.getOriginalFilename();
 	        
             file.transferTo(new File(destinationPath));
             
         } catch (Exception e) {
-            return "ファイルアップロード失敗: " + e.getMessage();
+            return "ファイルアップロード失敗: " + projectRootPath +":"+ e.getMessage();
         }
 		
 		documentDivider.setPath(destinationPath);
