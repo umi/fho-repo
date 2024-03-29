@@ -68,7 +68,7 @@ public class ImportController {
                 
                 // ファイルを保存するディレクトリとファイル名を指定
                 String uploadDir = "src/main/resources/upload/";
-                String fileName = file.getOriginalFilename();
+                String fileName = "upload.txt";
                 String destinationPath = uploadDir + fileName;
                 
                 // ファイルを保存

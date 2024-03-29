@@ -29,7 +29,7 @@ public class ReadFileController {
     }
 
     public static List<String> readFileContent() {
-        ClassPathResource resource = new ClassPathResource("upload/sample.txt");
+        ClassPathResource resource = new ClassPathResource("upload/upload.txt");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
             return reader.lines().collect(Collectors.toList());
         } catch (Exception e) {
