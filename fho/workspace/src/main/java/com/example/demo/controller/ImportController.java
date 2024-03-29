@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -67,12 +68,15 @@ public class ImportController {
                 InputStream inputStream = file.getInputStream();
                 
                 // ファイルを保存するディレクトリとファイル名を指定
-                String uploadDir = "src/main/resources/upload/";
+                
+                ClassPathResource resource = new ClassPathResource("upload/");
+                String uploadDir = resource.getPath();
                 String fileName = "upload.txt";
-                String destinationPath = uploadDir + fileName;
+                String filePath = uploadDir + fileName;
+                destinationPath = filePath;
                 
                 // ファイルを保存
-                OutputStream outputStream = new FileOutputStream(destinationPath);
+                OutputStream outputStream = new FileOutputStream(filePath);
                 byte[] buffer = new byte[1024];
                 int bytesRead;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
