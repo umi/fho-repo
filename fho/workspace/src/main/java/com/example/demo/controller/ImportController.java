@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -57,9 +59,17 @@ public class ImportController {
 	@PostMapping("/insert")
 	public String insert(@RequestParam("file") MultipartFile file,@RequestParam String year, Model model) {
 		DocumentDivider documentDivider = new DocumentDivider();
+		
+		// 基準となるディレクトリからの相対パスを指定
+        String relativePath = "src/main/resources/upload/";
+        
+        
 		try {
-            // 例: ファイルをサーバー上の特定の場所に保存
-            destinationPath = "D:/Git/fho-repo/fho/workspace/src/main/resources/upload/" + file.getOriginalFilename();
+			
+			// リソースを取得して相対パスを解決
+	        Resource resource = new ClassPathResource(relativePath + file.getOriginalFilename());
+	        String destinationPath = resource.getFile().getAbsolutePath();
+	        
             file.transferTo(new File(destinationPath));
             
         } catch (Exception e) {
