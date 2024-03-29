@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -67,8 +65,8 @@ public class ImportController {
 		try {
 			
 			// リソースを取得して相対パスを解決
-	        Resource resource = new ClassPathResource(relativePath + file.getOriginalFilename());
-	        String destinationPath = resource.getFile().getAbsolutePath();
+	        
+	        String destinationPath = relativePath + file.getOriginalFilename();
 	        
             file.transferTo(new File(destinationPath));
             
