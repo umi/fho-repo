@@ -59,20 +59,19 @@ public class ImportController {
 		DocumentDivider documentDivider = new DocumentDivider();
 		
 		// 基準となるディレクトリからの相対パスを指定
-        String relativePath = "src/main/resources/upload/";
-        String projectRootPath = System.getProperty("user.dir");
+        String relativePath = "./src/main/resources/upload/";
         
         
 		try {
 			
 			// リソースを取得して相対パスを解決
 	        
-	        String destinationPath = projectRootPath + relativePath + file.getOriginalFilename();
+	        String destinationPath = relativePath + file.getOriginalFilename();
 	        
             file.transferTo(new File(destinationPath));
             
         } catch (Exception e) {
-            return "ファイルアップロード失敗: " + projectRootPath +":"+ e.getMessage();
+            return "ファイルアップロード失敗: " + e.getMessage();
         }
 		
 		documentDivider.setPath(destinationPath);
