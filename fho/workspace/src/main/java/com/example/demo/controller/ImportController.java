@@ -1,9 +1,10 @@
 package com.example.demo.controller;
 
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,24 +70,16 @@ public class ImportController {
                 
                 // ファイルを保存するディレクトリとファイル名を指定
                 
-                ClassPathResource resource = new ClassPathResource("upload/");
-                String uploadDir = resource.getPath();
-                String fileName = "upload.txt";
-                String filePath = uploadDir + fileName;
-                destinationPath = filePath;
+                ClassPathResource resource = new ClassPathResource("upload/upload.txt");
+                File uploadFile = resource.getFile();
+                destinationPath = resource.getPath();
+
+                Files.write(Paths.get(uploadFile.getAbsolutePath()), file.getBytes());
+                System.out.println("File uploaded successfully.");
                 
-                // ファイルを保存
-                OutputStream outputStream = new FileOutputStream(filePath);
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-                outputStream.close();
-                inputStream.close();
                 
                 // ファイルが正常に保存された場合の処理
-                System.out.println("ファイルが正常にアップロードされました: " + fileName);
+                System.out.println("ファイルが正常にアップロードされました");
             } catch (IOException e) {
                 e.printStackTrace();
                 return "ファイルのアップロード中にエラーが発生しました: " + e.getMessage();
