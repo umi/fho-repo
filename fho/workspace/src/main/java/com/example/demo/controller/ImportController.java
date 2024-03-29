@@ -1,6 +1,9 @@
 package com.example.demo.controller;
 
-import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,21 +61,36 @@ public class ImportController {
 	public String insert(@RequestParam("file") MultipartFile file,@RequestParam String year, Model model) {
 		DocumentDivider documentDivider = new DocumentDivider();
 		
-		// 基準となるディレクトリからの相対パスを指定
-        String relativePath = "./src/main/resources/upload/";
-        
-        
-		try {
-			
-			// リソースを取得して相対パスを解決
-	        
-	        String destinationPath = relativePath + file.getOriginalFilename();
-	        
-            file.transferTo(new File(destinationPath));
-            
-        } catch (Exception e) {
-            return "ファイルアップロード失敗: " + e.getMessage();
+		if (!file.isEmpty()) {
+            try {
+                // アップロードされたファイルの入力ストリームを取得
+                InputStream inputStream = file.getInputStream();
+                
+                // ファイルを保存するディレクトリとファイル名を指定
+                String uploadDir = "/src/main/resources/upload/";
+                String fileName = file.getOriginalFilename();
+                String destinationPath = uploadDir + fileName;
+                
+                // ファイルを保存
+                OutputStream outputStream = new FileOutputStream(destinationPath);
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                outputStream.close();
+                inputStream.close();
+                
+                // ファイルが正常に保存された場合の処理
+                System.out.println("ファイルが正常にアップロードされました: " + fileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "ファイルのアップロード中にエラーが発生しました: " + e.getMessage();
+            }
+        } else {
+            return "アップロードされたファイルが空です。";
         }
+        
 		
 		documentDivider.setPath(destinationPath);
 
