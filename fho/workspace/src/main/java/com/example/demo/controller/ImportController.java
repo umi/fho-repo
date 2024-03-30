@@ -1,13 +1,14 @@
 package com.example.demo.controller;
 
-import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -53,29 +54,40 @@ public class ImportController {
     
 	@Autowired
 	DocumentParser parser = new DocumentParser();
-	
-	@Autowired
-	private ResourceLoader resourceLoader;
-	
-	String destinationPath;
+		String destinationPath;
 
 	@PostMapping("/insert")
 	public String insert(@RequestParam("file") MultipartFile file,@RequestParam String year, Model model) {
 		DocumentDivider documentDivider = new DocumentDivider();
+		
+		if (!file.isEmpty()) {
             try {
+                // アップロードされたファイルの入力ストリームを取得
+                InputStream inputStream = file.getInputStream();                // ファイルを保存するディレクトリとファイル名を指定
+                String uploadDir = "src/main/resources/upload/";
+                String fileName = "upload.txt";
+                destinationPath = uploadDir + fileName;
             	
-            // ワークスペースのパスを取得
-                Resource resource = resourceLoader.getResource("classpath:");
-                String workspacePath = resource.getFile().getAbsolutePath();
-            	
-            // 例: ファイルをサーバー上の特定の場所に保存
-            destinationPath = workspacePath + "/upload/upload.txt";
+                // ファイルを保存
+                OutputStream outputStream = new FileOutputStream(destinationPath);
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                outputStream.close();
+                inputStream.close();
             
-            file.transferTo(new File(destinationPath));
-                
-            } catch (Exception e) {
-            return "ファイルアップロード失敗: " + e.getMessage();
+                // ファイルが正常に保存された場合の処理
+                System.out.println("ファイルが正常にアップロードされました：" + fileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "ファイルのアップロード中にエラーが発生しました: " + e.getMessage();
             }
+        } else {
+            return "アップロードされたファイルが空です。";
+        }
+                
 		
 		documentDivider.setPath(destinationPath);
 
