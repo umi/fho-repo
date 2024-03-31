@@ -27,7 +27,7 @@
 	            <option
 	                th:each="user : ${user}"
 	                th:value="${user.id}"
-	                th:text="${user.userName}"
+	                th:text="${user.userName != '' ? user.userName : user.userAbbreviation}"
 	                th:selected="${user.id == selectedUserValue}">
 	            </option>
         	</select>
