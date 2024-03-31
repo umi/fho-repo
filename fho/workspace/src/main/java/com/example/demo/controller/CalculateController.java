@@ -88,7 +88,7 @@ public class CalculateController {
 					 Year--;
 				 }
 			 }
-			 for(int i = 0; i < 36; i++) {
+			 for(int i = 0; i < 48; i++) {
 				 mTime[i] = SecondsToTimeConverter.convertToTime(mtotalTime[i]);
 			 }
 		 
