@@ -87,3 +87,5 @@ font-size:16px;/*検索ボタンのフォントサイズ*/
 #sbtn:hover{
 color:#666;/*検索ボタンマウスオーバー時のフォントカラー*/ 
 }
+
+.pagination li {display:inline;}

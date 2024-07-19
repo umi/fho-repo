@@ -46,7 +46,6 @@ public class MarkService {
 		
 		Integer id = 0;
 		
-		
 		if(!Marks.containsKey(mark)) {
 			
 			Mark imark = new Mark();
@@ -69,7 +68,7 @@ public class MarkService {
 		 Marks.clear();
 		 
 		 for(Mark mark: list) {
-			 Marks.put(mark.getMark(), mark.getMarkId());
+			 Marks.put(mark.getMark(), mark.getId());
 		 }
 		
 	}

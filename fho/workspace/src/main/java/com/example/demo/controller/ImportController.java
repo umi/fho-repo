@@ -1,5 +1,9 @@
 package com.example.demo.controller;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +16,16 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.dto.DescriptionDTO;
+import com.example.demo.entity.Battle;
 import com.example.demo.entity.Fho;
 import com.example.demo.entity.Stream;
 import com.example.demo.repository.MarkRepository;
+import com.example.demo.service.BattleService;
 import com.example.demo.service.FhoService;
 import com.example.demo.service.StreamMarkService;
 import com.example.demo.service.StreamService;
@@ -32,7 +41,10 @@ public class ImportController {
     private StreamService streamService;
 	
 	@Autowired
-    private StreamMarkService StreamMarkService;
+    private StreamMarkService streamMarkService;
+	
+	@Autowired
+    private BattleService battleService;
 	
 	@Autowired
 	private MarkRepository markRepository;
@@ -42,13 +54,45 @@ public class ImportController {
     
 	@Autowired
 	DocumentParser parser = new DocumentParser();
+		String destinationPath;
 
-	@GetMapping("/insert")
-	public String insert(@RequestParam String year, Model model) {
+	@PostMapping("/insert")
+	public String insert(@RequestParam("file") MultipartFile file,@RequestParam String year, Model model) {
 		DocumentDivider documentDivider = new DocumentDivider();
-		documentDivider.setPath("src/main/resources/upload/sample.txt");
+		
+		if (!file.isEmpty()) {
+            try {
+                // アップロードされたファイルの入力ストリームを取得
+                InputStream inputStream = file.getInputStream();                // ファイルを保存するディレクトリとファイル名を指定
+                String uploadDir = "src/main/resources/upload/";
+                String fileName = "upload.txt";
+                destinationPath = uploadDir + fileName;
+            	
+                // ファイルを保存
+                OutputStream outputStream = new FileOutputStream(destinationPath);
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                outputStream.close();
+                inputStream.close();
+            
+                // ファイルが正常に保存された場合の処理
+                System.out.println("ファイルが正常にアップロードされました：" + fileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "ファイルのアップロード中にエラーが発生しました: " + e.getMessage();
+            }
+        } else {
+            return "アップロードされたファイルが空です。";
+        }
+                
+		
+		documentDivider.setPath(destinationPath);
 
 		List<String> data = new ArrayList<>();
+		data.add(destinationPath);
 		data.add("=========================================================");
 		int i = 0;
 		while(documentDivider.hasNext()){
@@ -62,7 +106,26 @@ public class ImportController {
 		}
 
 		model.addAttribute("content", data);
+		model.addAttribute("year", year);
+		
 		return "read/index"; // or wherever you want to redirect after saving
+	}
+	
+	@GetMapping("/upload")
+	public String upload(Model model) {
+		List<DescriptionDTO> descriptions = new ArrayList<>();
+		for(int i = 0; i < 100; i++) {
+			descriptions.add(new DescriptionDTO("",""));
+			}
+		
+		model.addAttribute("descriptions", descriptions);
+		
+		return "upload/index";
+	}
+	
+	@GetMapping("/uploadData")
+	public String uploadData(Model model) {
+		return "upload/index";
 	}
 
 	private List<String> insertFho(List<String> contents, String year) {
@@ -85,32 +148,49 @@ public class ImportController {
 			TransactionStatus status = txManager.getTransaction(def);
 
 			Fho fho = parser.getFho();
+			List<Battle> battles = parser.getBattles();
 			List<Stream> list = parser.getStreams();
-
+			List<Integer> youtubeIds = fhoService.getYouTubeToId(fho.getYoutubeId());
+			
+			//fho_infoに存在するyoutubeIdが重複するデータを削除
+			if(youtubeIds != null && !youtubeIds.isEmpty()) {
+				for(int youtubeId : youtubeIds) {
+					fhoService.deleteData(youtubeId);
+				}
+			}
 			
 			//fho_infoにデータINSERT
 			fhoService.setData(fho);
 			int fhoId = fhoService.lastInsertId();
 			data.add(fhoId + " | " + fho.getStreamStart() + " | " + fho.getTitle() + " | " + fho.getYoutubeId());
 			
-			//stream_infoにデータを挿入
 			for(Stream stream: list){
+				//stream_infoにデータを挿入
 				streamService.setData(stream, fhoId);
 				int streamId = streamService.lastInsertId();
-				Integer id[][] = parser.getId();
+				Integer id[][] = parser.getMarkId();
 				
 				//stream_markテーブルに紐づけを格納
 				for(Integer markIdInteger: id[i]) {
 					markId = markIdInteger == null ? 0: markIdInteger;
 					if(markId > 0) {
-						StreamMarkService.setData(streamId, markId);
+						streamMarkService.setData(streamId, markId);
 					}
 				}
 				
+				//1v1テーブルに対戦記録を格納
+				Battle battle = battles.get(i);
+				if(battle.getCreativeId() > 0 && battle.getOpponentId() > 0) {
+					battle.setId(streamId);
+					battleService.setData(battle);
+				}
+				
 				markId = 0;
-				i++;
+				i++; //取り込み行のインクリメント 開始は0
 				data.add(stream.getTime() + " | " + stream.getDescription());
 			}
+			
+			
 			
 			txManager.commit(status);
 		}catch(Exception e){

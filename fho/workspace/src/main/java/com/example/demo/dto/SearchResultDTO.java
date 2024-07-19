@@ -1,4 +1,7 @@
 package com.example.demo.dto;
+import java.sql.Time;
+import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -6,18 +9,22 @@ import lombok.Setter;
 @Setter
 public class SearchResultDTO {
     private int id;
-    private String streamStart;
+    private int fhoId;
+    private LocalDateTime streamStart;
     private String title;
-    private String time;
+    private Time time;
     private String description;
     private String mark;
+    private String youtubeId;
 
-    public SearchResultDTO(int id,  String title, String time ,String description, String streamStart, String mark) {
+    public SearchResultDTO(int id, int fhoId, String title, Time time ,String description, LocalDateTime streamStart, String mark, String youtubeId) {
         this.id = id;
+        this.fhoId = fhoId;
         this.streamStart = streamStart;
         this.title = title;
         this.time = time;
         this.description = description;
         this.mark = mark;
+        this.youtubeId = youtubeId;
     }
 }

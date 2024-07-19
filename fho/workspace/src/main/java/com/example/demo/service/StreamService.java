@@ -19,7 +19,7 @@ public class StreamService {
 	}
 	
 	public void setData(Stream stream, int id){
-		stream.setId(id);
+		stream.setFhoId(id);
 		streamRepository.save(stream);
 	}
 	

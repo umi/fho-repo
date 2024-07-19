@@ -8,19 +8,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.demo.entity.Fho;
-import com.example.demo.service.FhoService;
+import com.example.demo.entity.User;
+import com.example.demo.service.UserService;
 
 @Controller
-@RequestMapping("/")
-public class FhoController {
-    @Autowired
-    private FhoService fhoService;
-
+@RequestMapping("/master/user")
+public class UserController {
+	
+	@Autowired
+    private UserService userService;
+	
     @GetMapping
     public String index(Model model) {
-        List<Fho> fho = fhoService.getFho();
-        model.addAttribute("fho", fho);
-        return "fho/index";
+    	List<User> user = userService.getUser();
+        model.addAttribute("user", user);
+        return "master/user";
     }
 }

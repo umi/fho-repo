@@ -1,0 +1,45 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <link th:href="@{/css/content.css}" rel="stylesheet">
+</head>
+<body>
+	<button onclick="location.href='/calculate'">戻る</button>
+    <table border=1>
+        <thead>
+            <tr>
+                <th>配信回数</th>
+                <th>総配信時間</th>
+            </tr>
+        </thead>
+        <tbody>
+				<td>[[${count}]]</td>
+                <td>[[${tTime}]]</td>
+        </tbody>
+    </table>
+    
+        <table border=1>
+	        <thead>
+	            <tr>
+					<th>年</th>
+	                <th>月</th>
+	                <th>配信回数</th>
+	                <th>配信時間</th>
+	            </tr>
+	        </thead>
+		    <tbody>
+			        <tr th:each="i : ${#numbers.sequence(0, 47)}">
+				        <!-- 年を計算 -->
+				        <th th:text="${2024 - (i / 12)}">2024</th> <!-- iを12で割った商で年を計算 -->
+				        <!-- 月を計算 -->
+				        <td th:text="${(i % 12) + 1}">1</td> <!-- iを12で割った余りで月を計算 -->
+				        <!-- 配信回数と配信時間を表示 -->
+				        <td th:text="${mcount[i]}">0</td>
+				        <td th:text="${mTime[i]}">0:00</td>
+    				</tr>
+			</tbody>
+    	</table>
+
+</body>
+</html>

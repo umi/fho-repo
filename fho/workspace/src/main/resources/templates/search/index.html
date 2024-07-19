@@ -11,18 +11,45 @@
 <form id="form1" th:action="@{/search}" method="get">
 <p>タイトル：<input id="sbox1" name="sbox1" type="text" th:value="${title}" placeholder="タイトル" /></p>
 <p>　内容　：<input id="sbox2" name="sbox2" type="text" th:value="${description}" placeholder="詳細" /></p>
-  　マーク：<select name="mark">
+<nobr>　期間　：<input th:value="${starttime}" type="date" name="starttime">～<input th:value="${endtime}" type="date" name="endtime"></nobr>
+			<nobr>
+		マーク：<select name="mark">
 	            <option value="00"></option>
 	            <option
 	                th:each="mark : ${mark}"
-	                th:value="${mark.markId}"
+	                th:value="${mark.id}"
 	                th:text="${mark.mark}"
-	                th:selected="${mark.markId == selectedValue}">
+	                th:selected="${mark.id == selectedMarkValue}">
 	            </option>
         	</select>
+	プレイヤー：<select name="user">
+	            <option value="00"></option>
+	            <option
+	                th:each="user : ${user}"
+	                th:value="${user.id}"
+	                th:text="${user.userName != '' ? user.userName : user.userAbbreviation}"
+	                th:selected="${user.id == selectedUserValue}">
+	            </option>
+        	</select>
+        	</nobr>
 <p><input id="sbtn1" type="submit" value="検索" /></p></form>
 
 <button onclick="location.href='/'">戻る</button>
+
+<div class="pagination" th:if="${totalPages > 0}">
+    <ul>
+        <li th:if="${hasPreviousPage}">
+            <a th:href="@{/search(sbox1=${title},sbox2=${description},mark=${selectedValue},page=${currentPage - 1},size=${size})}">前のページ</a>
+        </li>
+        <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:href="@{/search(sbox1=${title}, sbox2=${description}, mark=${selectedValue}, page=${pageNumber}, size=${size})}" th:text="${pageNumber + 1}"></a>
+        </li>
+        <li th:if="${hasNextPage}">
+            <a th:href="@{/search(sbox1=${title},sbox2=${description},mark=${selectedValue},page=${currentPage + 1},size=${size})}">次のページ</a>
+        </li>
+    </ul>
+</div>
+
     <table border=1>
         <thead>
             <tr>
@@ -34,11 +61,11 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="result : ${content}" th:object="${result}">
-                <td th:text="*{title}"></td>
+            <tr th:each="result,iterStat  : ${content}" th:object="${result}">
+                <td><a th:href="|/stream/${result.fhoId}|">[[${result.title}]]</a></td>
                 <td th:text="*{streamStart}"></td>
                 <td th:text="*{time}"></td>
-                <td th:text="*{description}"></td>
+                <td><a th:href="${'https://www.youtube.com/live/' + result.youtubeId + '/?t='+ sec[iterStat.index]}">[[${result.description}]]</a></td>
                 <td th:text="*{mark}"></td>
             </tr>
         </tbody>

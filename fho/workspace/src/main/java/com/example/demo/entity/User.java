@@ -1,7 +1,5 @@
 package com.example.demo.entity;
 
-import java.sql.Time;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,21 +10,15 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "stream_info")
-public class Stream {
+@Table(name = "user_info")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
-    private int fhoId;
-
-    @Column(nullable = false)
-    private Time time;
-
-    @Column(nullable = false, length = 2048)
-    private String description;
+    @Column(nullable = true)
+    private String userName;
     
-    @Column(nullable = false)
-    private int isDelete;
+    @Column(nullable = true)
+    private String userAbbreviation;
 }

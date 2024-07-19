@@ -16,9 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.TimeToSecondsConverter;
+import com.example.demo.entity.Battle;
 import com.example.demo.entity.Fho;
 import com.example.demo.entity.Stream;
+import com.example.demo.service.CreativeService;
 import com.example.demo.service.MarkService;
+import com.example.demo.service.UserService;
 
 import lombok.Getter;
 
@@ -34,10 +37,21 @@ public class DocumentParser {
 	private ArrayList<Stream> streams;
 	
 	@Getter
-	private Integer id[][];
+	private ArrayList<Battle> battles;
+	
+	@Getter
+	private Integer markId[][];
+
+	private String lastDate = "1/1";
 	
 	@Autowired
     private MarkService markService;
+	
+	@Autowired
+    private CreativeService creativeService;
+	
+	@Autowired
+    private UserService userService;
 	
 
 	/**
@@ -53,11 +67,13 @@ public class DocumentParser {
 		boolean isTitleInserted = false;
 
 		// 日付 タイトル 時間
-		Pattern headPattern = this.getHeadLinePattern();
+		Pattern headPattern = DocumentParser.getHeadLinePattern();
 		// stream line
-		Pattern streamPattern = this.getStreamLinePattern();
+		Pattern streamPattern = DocumentParser.getStreamLinePattern();
 		// url
-		Pattern urlPattern = this.getYoutubePattern();
+		Pattern urlPattern = DocumentParser.getYoutubePattern();
+		//1v1
+		Pattern battlePattern = DocumentParser.getBattlePattern();
 
 		int i = 0;
 		int k = 0;
@@ -76,7 +92,7 @@ public class DocumentParser {
 			//URLパターンにマッチした場合
 			if(matcherYouTubeID.matches()){
 				//YouTubeID 3パターンのいずれかを取り込む
-				for(int j = 0; j < 3; j++){
+				for(int j = 1; j <= 3; j++){
 					if(Objects.nonNull(matcherYouTubeID.group(j))){
 						fho.setYoutubeId(matcherYouTubeID.group(j));
 						break;
@@ -87,8 +103,21 @@ public class DocumentParser {
 				if(!isTitleInserted && matcherHead.matches()){
 					// fho_infoの開始日時
 					streamStart.delete(0, streamStart.length());
+					
 					streamStart.append(year);
-					streamStart.append(" ").append(matcherHead.group(1));
+					streamStart.append(" ");
+					if (Objects.nonNull(matcherHead.group(1))) {
+						if(matcherHead.group(1).startsWith("0")) {
+							streamStart.append("1");
+							streamStart.append(matcherHead.group(1));
+						}else {
+							streamStart.append(matcherHead.group(1));
+						}
+						lastDate = matcherHead.group(1);
+					}else{
+						streamStart.append(lastDate);
+					}
+					
 					if (Objects.nonNull(matcherHead.group(4))) {
 						streamStart.append(" ").append(matcherHead.group(4));
 					}
@@ -102,7 +131,11 @@ public class DocumentParser {
 					}
 					
 					String datetimeString = streamStart.toString();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy M/d HH:mm"); // パターンを "yyyy M/d HH:mm" に変更
+					
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy M/d H:mm"); // パターンを "yyyy M/d HH:mm" に変更
+					if (!datetimeString.contains(":")) {
+					    datetimeString += " 00:00";  // 時と分が含まれていない場合、00:00を追加
+					}
 					LocalDateTime datetime = LocalDateTime.parse(datetimeString, formatter);
 					
 					fho.setStreamStart(datetime);
@@ -131,7 +164,7 @@ public class DocumentParser {
 					emojis = DocumentEmojiExtractor.extractEmojis(lineparts.get(0));	//全文から絵文字のみ抽出
 					
 					for(int j = 0; j<emojis.size();j++) {
-							id[k][j]=markService.markToId(emojis.get(j)); //絵文字IDをListに格納
+						markId[k][j]=markService.markToId(emojis.get(j)); //絵文字IDをListに格納
 					}
 					
 					String timeString = lineparts.get(1);
@@ -150,6 +183,34 @@ public class DocumentParser {
 					stream.setIsDelete(0);
 					//stream_infoに格納するデータset
 					streams.add(stream);
+					
+					//1v1テーブルデータ抽出
+					Matcher matcherBattle = battlePattern.matcher(lineparts.get(2));
+					Battle battle = new Battle();
+					if(matcherBattle.matches()) {
+						
+						int win = Integer.parseInt(matcherBattle.group(2));
+						int lose = Integer.parseInt(matcherBattle.group(4));
+						
+						battle.setId(0);
+						battle.setCreativeId(creativeService.creativeNameToId(matcherBattle.group(1))); //対戦場所
+						battle.setOpponentId(userService.userAbbreviationToId(matcherBattle.group(3))); //対戦相手
+						battle.setWin(win); //勝ち回数
+						battle.setLose(lose); //負け回数
+						battle.setSum(win + lose); //合計
+						
+						battles.add(battle);
+					}else {
+						//1v1ではない配信情報の場合すべて0をセット
+						battle.setId(0);
+						battle.setCreativeId(0); //対戦場所
+						battle.setOpponentId(0); //対戦相手
+						battle.setWin(0); //勝ち回数
+						battle.setLose(0); //負け回数
+						
+						battles.add(battle);
+					}
+					
 					k++;
 				}
 				content.delete(0, content.length());
@@ -167,13 +228,14 @@ public class DocumentParser {
 	public void clear(){
 		fho = new Fho();
 		streams = new ArrayList<Stream>();
-		id = new Integer[1000][1000];
+		battles =new ArrayList<Battle>();
+		markId = new Integer[1000][1000];
 	}
 
 	private List<String> createStream(String line){
 		List<String> lineparts = new ArrayList<>();
 		StringBuilder time = new StringBuilder("00:00:00");
-		Pattern streamPattern = this.getStreamLinePattern();
+		Pattern streamPattern = DocumentParser.getStreamLinePattern();
 		Matcher matcherStream = streamPattern.matcher(line);
 		
 		//（時間の前にマークがあってもOK）内容の行とマッチした場合
@@ -197,7 +259,7 @@ public class DocumentParser {
 	 * @return Pattern
 	 */
 	public static Pattern getHeadLinePattern() {
-		return Pattern.compile(".*(\\d{1,2}/\\d{1,2})\\s+(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*([^\\(]*)(?:\\((\\d{1,2}:\\d{2})～\\))?(.*)");
+		return Pattern.compile("[^\\d]*(?:\\d{2,4}/)?(\\d{1,2}/\\d{1,2})?\\s*(\\d{1,2}:\\d{2}(?::\\d{2})?)(?!～)\\s*([^\\(]*)(?:\\((\\d{1,2}:\\d{2})～\\))?(.*)");
 	}
 
 	/**
@@ -218,6 +280,15 @@ public class DocumentParser {
 	 */
 	public static Pattern getYoutubePattern() {
 		return Pattern.compile("^\\s*https://(?:www\\.youtube\\.com/(?:live/([^?]+)|watch\\?v=([^&]+)).*|youtu\\.be/(.+))");
+	}
+	
+	/**
+	 * 軽すぎて風になっちゃうボックスファイト ※(姫4 対 へ6)  ※(10回) (計10 残り490)
+	 * のようなパターンから①対戦場所と③対戦相手、②④勝敗回数を抽出
+	 * @return Pattern
+	 */
+	public static Pattern getBattlePattern() {
+		return Pattern.compile("^(.*)※\\(姫(\\d{1,2})\\s対\\s(.+?)(\\d{1,2})\\).*");
 	}
 
 }

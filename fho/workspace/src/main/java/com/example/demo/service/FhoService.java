@@ -24,4 +24,12 @@ public class FhoService {
 	public void setData(Fho fho) {
 		fhoRepository.save(fho);
 	}
+	
+	public void deleteData(int id) {
+		fhoRepository.deleteById(id);
+	}
+	
+	public List<Integer> getYouTubeToId(String youtubeId) {
+        return fhoRepository.findByYouTubeId(youtubeId);
+    }
 }
