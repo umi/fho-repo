@@ -1,0 +1,36 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <link th:href="@{/css/content.css}" rel="stylesheet">
+</head>
+<body>
+	<button onclick="location.href='/read'">ファイルの読み取り</button>
+	<button onclick="location.href='/upload'">配信情報新規登録</button>
+    <button onclick="location.href='/search'">配信詳細検索</button>
+    <button onclick="location.href='/calculate'">情報集計</button>
+    <button onclick="location.href='/master'">マスタメンテ</button>
+    <button onclick="location.href='/logout'">ログアウト</button>
+    <table border=1>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>youtubeURL</th>
+                <th>タイトル</th>
+                <th>配信開始日時</th>
+                <th>総配信時間[秒]</th>
+            </tr>
+        </thead>
+        <tbody>
+			<tr th:each="line : ${fho}" th:object="${fho}">
+				<td><a th:href="|/stream/${line.id}|">[[${line.id}]]</a></td>
+                <td>[[${line.youtubeId}]]</td>
+                <td><a th:href="|/stream/${line.id}|">[[${line.title}]]</a></td>
+                <td>[[${line.streamStart}]]</td>
+                <td>[[${line.total}]]</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
