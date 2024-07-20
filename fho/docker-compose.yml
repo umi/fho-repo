@@ -22,5 +22,27 @@ services:
     ports:
       - 8081:8080
 
+  web:
+    image: nginx
+    volumes:
+      - ./web/conf.d:/etc/nginx/conf.d
+      - ./web/log:/var/log/nginx
+      - ./web/html:/var/www/html
+      - ./web/letsencrypt:/etc/letsencrypt
+    env_file:
+      - ./environments/common.env
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - app
+
+  certbot:
+    image: certbot/certbot:v1.7.0
+    volumes:
+      - ./web/letsencrypt:/etc/letsencrypt
+      - ./web/html:/var/www/html
+    command: ["--version"]
+
 volumes:
   db-store:
